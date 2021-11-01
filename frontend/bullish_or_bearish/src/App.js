@@ -3,13 +3,30 @@ import React, {useState, useEffect} from "react";
 import Axios from 'axios';
 
 function App() {
+  const [commentList, setCommentList] = useState([]);
+
+  // Submit Comment
   const [userId, setUserId] = useState(0);
   const [content, setContent] = useState('');
 
+  // Update Comment
+  const [updateContent, setUpdateContent] = useState('');
+
+  useEffect(() => {
+    Axios.get('http://localhost:3002/api/get').then((response) => {
+      setCommentList(response.data)
+    })
+  },[])
+
   const submitComment = () => {
+    const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const likeCount = 0
+
     Axios.post('http://localhost:3002/api/insert', {
       userId: userId,
-      content: content
+      content: content,
+      date: date,
+      likeCount: likeCount
     }).then(()=> {
       alert('Add Comment Success')
     })
@@ -54,25 +71,24 @@ function App() {
         <button onClick={submitComment}>Submit</button>
       </div>
 
-      <h2>Reading first 15 Comments</h2>
-      
-      <h2>Update a comment</h2>
-      <div className="form">
-        <label>CommentId:</label><input type="number" name="commentId"></input>
-        <br></br>
-        <label>New Content:</label>
-        <br></br>
-        <textarea name="content" cols="40" rows="5" maxlength="256"></textarea>
-        <br></br>
-        <button onClick={updateComment}>Submit</button>
-      </div>
+      <h2>Last 5 Comments</h2>
 
-      <h2>Delete a comment</h2>
-      <div className="form">
-        <label>CommentId:</label><input type="number" name="commentId"></input>
-        <br></br>
-        <button onClick={deleteComment}>Submit</button>
-      </div>
+      {commentList.map((val) => {
+        return(
+          <div className="card">
+            <h3>User ID: {val.UserId}</h3>
+            <p>Time Posted: {val.TimePosted}</p>
+            <p>Likes: {val.LikeCount}</p>
+            <p>Content: {val.Content}</p>
+            <button onClick={()=>deleteComment(val.commentId)}>Delete</button>
+            <textarea name="content" cols="10" rows="2" maxlength="256" onChange={(e)=> {
+            setUpdateContent(e.target.value)
+            } }></textarea>
+            <button onClick={()=>updateComment(val.commentId)}>Update</button>
+          </div>
+        );
+      })
+    }
 
       <h2>Search for stocks</h2>
       <div className="form">
@@ -97,7 +113,7 @@ function App() {
         <button onClick={advancedQuery2}>Submit</button>
       </div>
     </div>
-  );
+  )
 }
 
 export default App;
