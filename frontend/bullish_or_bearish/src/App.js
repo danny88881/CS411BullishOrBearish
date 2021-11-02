@@ -12,6 +12,14 @@ function App() {
   // Update Comment
   const [updateContent, setUpdateContent] = useState('');
 
+  // Search Stock
+  const [retrievedStock, setRetrievedStock] = useState(null);
+  const [stockSymbol, setStockSymbol] = useState('');
+
+  // Advanced SQL Query 1
+  const [bullishOrBearishAdvanced1, setBullishOrBearishAdvanced1] = useState(0);
+  const [resultsAdvanced1, setResultsAdvanced1] = useState([]);
+
   useEffect(() => {
     Axios.get('http://localhost:3002/api/get').then((response) => {
       setCommentList(response.data)
@@ -32,8 +40,13 @@ function App() {
     })
   };
 
-  const updateComment = () => {
-    
+  const updateComment = (updateId) => {
+    Axios.post('http://localhost:3002/api/update', {
+      commentId: updateId,
+      newContent: updateContent,
+    }).then(()=> {
+      alert('Add Comment Success')
+    })
   };
 
   const deleteComment = () => {
@@ -41,11 +54,19 @@ function App() {
   };
 
   const searchStock = () => {
-    
+    Axios.post('http://localhost:3002/api/stock/search', {
+      stockSymbol: stockSymbol
+    }).then((res)=> {
+      setRetrievedStock(res.data[0]);
+    })
   };
 
   const advancedQuery1 = () => {
-    
+    Axios.post('http://localhost:3002/api/advanced1', {
+      bullishOrBearish: bullishOrBearishAdvanced1
+    }).then((res)=> {
+      setResultsAdvanced1(res.data);
+    })
   };
 
   const advancedQuery2 = () => {
@@ -56,6 +77,7 @@ function App() {
     <div className="App">
       <h1>Midterm Demo</h1>
       <h2>CRUD+Search+Advanced Queries</h2>
+      <hr></hr>
       <h2>Create Comment</h2>
       <div className="form">
         <label>UserId:</label><input type="number" name="userId" onChange={(e)=> {
@@ -71,6 +93,7 @@ function App() {
         <button onClick={submitComment}>Submit</button>
       </div>
 
+      <hr></hr>
       <h2>Last 5 Comments</h2>
 
       {commentList.map((val) => {
@@ -84,27 +107,88 @@ function App() {
             <textarea name="content" cols="10" rows="2" maxlength="256" onChange={(e)=> {
             setUpdateContent(e.target.value)
             } }></textarea>
-            <button onClick={()=>updateComment(val.commentId)}>Update</button>
+            <button onClick={()=>updateComment(val.CommentId)}>Update</button>
           </div>
         );
       })
     }
 
+      <hr></hr>
+
       <h2>Search for stocks</h2>
       <div className="form">
-        <label>Search:</label><input type="text" name="search"></input>
+        <label>Search:</label>
+        <input type="text" name="search" onChange={(e)=> {setStockSymbol(e.target.value);}}></input>
         <br></br>
         <button onClick={searchStock}>Submit</button>
       </div>
 
-      <h2>Advanced Query 1</h2>
+      { retrievedStock ?
+        <div>
+          <h3>Found Stock:</h3>
+          <table>
+            <tr>
+              <th>Symbol</th>
+              <td>{retrievedStock['Symbol']}</td>
+            </tr>
+            <tr>
+              <th>Name</th>
+              <td>{retrievedStock['Name']}</td>
+            </tr>
+            <tr>
+              <th>Sector</th>
+              <td>{retrievedStock['Sector']}</td>
+            </tr>
+            <tr>
+              <th>Industry</th>
+              <td>{retrievedStock['Industry']}</td>
+            </tr>
+          </table>
+        </div> : <p>Nothing found...</p>
+      }
+
+      <hr></hr>
+
+      <h2>Advanced Query 1 - Sectors With The Most Bullish Or Bearish Votes</h2>
       <div className="form">
-        <input type="radio" id="bullish" name="bullishorbearish" value="bullish"></input><label for="bullish">Bullish</label>
+        <input
+          type="radio"
+          id="bullish"
+          name="bullishorbearish"
+          value="bullish"
+          checked={bullishOrBearishAdvanced1 == 0}
+          onClick={() => {setBullishOrBearishAdvanced1(1 - bullishOrBearishAdvanced1)}}>
+        </input>
+        <label for="bullish">Bullish</label>
         <br></br>
-        <input type="radio" id="bearish" name="bullishorbearish" value="bearish"></input><label for="bearish">Bearish</label>
+        <input
+          type="radio"
+          id="bearish"
+          name="bullishorbearish"
+          value="bearish"
+          checked={bullishOrBearishAdvanced1 == 1}
+          onClick={() => {setBullishOrBearishAdvanced1(1 - bullishOrBearishAdvanced1)}}>
+        </input>
+        <label for="bearish">Bearish</label>
         <br></br>
         <button onClick={advancedQuery1}>Submit</button>
       </div>
+
+
+      { resultsAdvanced1.length ?
+        <table>
+          <tr><th>Sector</th><th>Number of Votes</th></tr>
+          {
+            resultsAdvanced1.map((sectorResult) => {
+              return <tr><td>{sectorResult.Sector}</td><td>{sectorResult.NumVotes}</td></tr>;
+            })
+          }
+        </table>
+        : <p>Choose bullish or bearish to see the top sectors by votes</p>
+      }
+
+
+      <hr></hr>
 
       <h2>Advanced Query 2</h2>
       <div className="form">
