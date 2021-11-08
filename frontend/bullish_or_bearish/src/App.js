@@ -20,6 +20,10 @@ function App() {
   const [bullishOrBearishAdvanced1, setBullishOrBearishAdvanced1] = useState(0);
   const [resultsAdvanced1, setResultsAdvanced1] = useState([]);
 
+  // Advanced SQL Query 2
+  const [bullishOrBearishAdvanced2, setBullishOrBearishAdvanced2] = useState('');
+  const [resultsAdvanced2, setResultsAdvanced2] = useState([]);
+
   useEffect(() => {
     Axios.get('http://localhost:3002/api/get').then((response) => {
       setCommentList(response.data)
@@ -49,8 +53,12 @@ function App() {
     })
   };
 
-  const deleteComment = () => {
-    
+  const deleteComment = (commentId) => {
+    Axios.post('http://localhost:3002/api/delete', {
+      commentId: commentId
+    }).then(()=> {
+      alert('Delete Comment Success')
+    })
   };
 
   const searchStock = () => {
@@ -70,7 +78,12 @@ function App() {
   };
 
   const advancedQuery2 = () => {
-    
+    const date =  bullishOrBearishAdvanced2.slice(0, 19).replace('T', ' ');
+    Axios.post('http://localhost:3002/api/advanced2', {
+      bullishOrBearish: date
+    }).then((res)=> {
+      setResultsAdvanced2(res.data);
+    })
   };
 
   return (
@@ -103,7 +116,7 @@ function App() {
             <p>Time Posted: {val.TimePosted}</p>
             <p>Likes: {val.LikeCount}</p>
             <p>Content: {val.Content}</p>
-            <button onClick={()=>deleteComment(val.commentId)}>Delete</button>
+            <button onClick={()=>deleteComment(val.CommentId)}>Delete</button>
             <textarea name="content" cols="10" rows="2" maxlength="256" onChange={(e)=> {
             setUpdateContent(e.target.value)
             } }></textarea>
@@ -190,12 +203,25 @@ function App() {
 
       <hr></hr>
 
-      <h2>Advanced Query 2</h2>
+      <h2>Advanced Query 2 - Number of votes after given date</h2>
       <div className="form">
-        <input type="date" name="date"></input>
+        <input type="date" name="date" onChange={(e)=> {setBullishOrBearishAdvanced2(e.target.value);}}></input>
         <br></br>
         <button onClick={advancedQuery2}>Submit</button>
       </div>
+
+
+      { resultsAdvanced2.length ?
+        <table>
+          <tr><th>Stock</th><th>Number of Votes</th></tr>
+          {
+            resultsAdvanced2.map((sectorResult) => {
+              return <tr><td>{sectorResult.Symbol}</td><td>{sectorResult.NumVotes}</td></tr>;
+            })
+          }
+        </table>
+        : <p>Choose the date to see the top stocks by number of votes</p>
+      }
     </div>
   )
 }

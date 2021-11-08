@@ -67,6 +67,25 @@ app.post('/api/advanced1', (request, response) => {
   })
 });
 
+app.post('/api/advanced2', (request, response) => {
+  const bullishOrBearish = request.body.bullishOrBearish;
+  console.log(bullishOrBearish);
+  const sqlAdvanced2 = "SELECT Symbol, COUNT(Symbol) as NumVotes FROM (SELECT s.Symbol as Symbol, v.Date as Date FROM Stock s NATURAL JOIN StockVote v WHERE v.Date >= ?) as VotesOctAndAfter GROUP BY Symbol ORDER BY NumVotes DESC;";
+  db.query(sqlAdvanced2, [bullishOrBearish], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
+app.post('/api/delete', (require, response) => {
+  const commentId = require.body.commentId;
+  const sqlDelete = "DELETE FROM Comment where CommentId = ?"; 
+  db.query(sqlDelete, [commentId], (err, result)=>{
+    console.log(err);
+    response.send(err);
+  })
+});
+
 app.listen(3002, () => {
   console.log("Running on port 3002")
-})
+});
