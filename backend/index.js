@@ -19,6 +19,13 @@ app.use(express.json());
 
 //console.log(process.env);
 
+app.get('/api/getId', (require, response) => {
+  const sqlSelect = "SELECT UserId FROM User WHERE Email = ?";
+  db.query(sqlSelect, (err, result) => {
+    response.send(result);
+  });
+})
+
 app.get('/api/get', (require, response) => {
   const sqlSelect = "SELECT * FROM Comment ORDER BY TimePosted DESC LIMIT 5";
   db.query(sqlSelect, (err, result) => {
@@ -85,6 +92,19 @@ app.post('/api/delete', (require, response) => {
     response.send(err);
   })
 });
+
+app.post('/api/register', (require, response) => {
+  const firstName = require.body.first_name;
+  const lastName = require.body.last_name;
+  const email = require.body.email;
+  const password = require.body.password;
+  const datetime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  const sqlRegister = "INSERT INTO User (FirstName, LastName, Email, Password, JoinDate) VALUES (?, ?, ?, ?, ?)"; 
+  db.query(sqlRegister, [firstName, lastName, email, password, datetime], (err, result)=>{
+    console.log(err);
+    response.send(err);
+  })
+})
 
 app.listen(3002, () => {
   console.log("Running on port 3002")
