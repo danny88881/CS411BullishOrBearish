@@ -56,6 +56,15 @@ app.post('/api/update', (require, response) => {
   })
 })
 
+app.post('/api/stocks', (request, response) => {
+  const stockOrderBy = request.body.stockOrderBy;
+  const sqlSearch = "SELECT * FROM Stock ORDER BY ?";
+  db.query(sqlSearch, [stockOrderBy], (err, result) => {
+    console.log(err);
+    response.send(result);
+  });
+});
+
 app.post('/api/stock/search', (request, response) => {
   const stockSymbol = request.body.stockSymbol;
   const sqlSearch = "SELECT * FROM Stock WHERE Symbol LIKE ?";

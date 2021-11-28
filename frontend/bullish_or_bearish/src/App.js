@@ -14,6 +14,8 @@ import ErrorPage from './pages/errorpage';
 import Registration from './pages/auth/register';
 import Login from './pages/auth/login';
 
+import Stocks from './pages/stocks';
+
 class App extends Component {
   render() {
     return(
@@ -22,7 +24,7 @@ class App extends Component {
     <Routes>
       <Route path="/" />
       <Route path="/Registration" element={<Registration/>} />
-      <Route path="/Stocks" element={<Registration/>} />
+      <Route path="/Stocks" element={<Stocks/>} />
       <Route path="/Watchlists" element={<Registration/>} />
       <Route path="/Search" element={<Registration/>} />
       <Route path="/Register" element={<Registration/>} />
