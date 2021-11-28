@@ -105,8 +105,12 @@ body {
   font-size: 32px;
 }
 
-.register button {
+button {
   padding: 10px;
   color:black;
   font-size: 32px;
+}
+
+.profile {
+  margin: 100px;
 }

@@ -2,18 +2,18 @@ import React, { Component } from "react";
 import axios from "axios";
 import bcrypt from "bcryptjs"
 
-async function hashIt(password){
-  const salt = await bcrypt.genSalt(6);
-  const hashed = await bcrypt.hash(password, salt);
-  return hashed;
+function redir() {
+  const userId = localStorage.getItem('userId')
+  if (userId == 'undefined') {
+  } else {
+    document.location.href = "/Profile";
+  }
 }
-
-// resource https://www.youtube.com/watch?v=AWLgf_xfd_w
 
 export default class Login extends Component {
   constructor(props) {
     super(props);
-
+    redir();
     this.state = {
       email: "",
       password: "",
@@ -27,21 +27,40 @@ export default class Login extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    const pass = hashIt(this.state.password)
-    const conf = hashIt(this.state.password_confirmation)
-    if (pass == conf) {
-      axios.post('http://localhost:3002/api/register', {first_name: this.state.first_name, last_name: this.state.last_name, email: this.state.email, password: this.password.email},
-      { withCredentials: true }).then(
-        response => {console.log("registration reg", response);}
-      ).catch(error => {console.log("registration error", error);})
-    } else {
-      this.setState({loginError: false})
-    }
+    const hashedPassword = bcrypt.hashSync(this.state.password, '$2a$10$CwTycUxWue0Ohq9StjUM0u')
+    var conf = "";
+    console.log(this.state.email);
+    axios.get('http://localhost:3002/api/getPassword', {params:{email: this.state.email}}).then(
+      response => {
+        console.log(response);
+        conf = response.data[0].Password;
+        
+        if (hashedPassword == conf) {
+          axios.get('http://localhost:3002/api/getId', {params:{email: this.state.email}}).then(
+            response => {
+              localStorage.setItem('userId', response.data[0].UserId)
+              document.location.href = "/Profile";
+            }
+          )
+        } else {
+          this.setState({loginError: true});
+        }
+      }
+      
+    ).catch(
+      error => {
+        console.log("login error", error);
+        this.setState({loginError: true});
+    });
   }
 
   handleChange(event) {
     this.setState({[event.target.name]: event.target.value});
     this.setState({loginError: false})
+  }
+
+  goToRegister() {
+    document.location.href = '/Register'
   }
 
   render () {
@@ -53,6 +72,7 @@ export default class Login extends Component {
         <input type="email" name="email" placeholder="email" value={this.state.email} onChange={this.handleChange} required/>
         <input type="password" name="password" placeholder="password" value={this.state.password} onChange={this.handleChange} required/>
         <button type="submit" disabled={this.state.loginError}>login</button>
+        <button type="button" onClick={this.goToRegister}>create account</button>
         <h3 style={{display: this.state.loginError ? "block" : "none", color:"#ff0000"}}>login error</h3>
         </form>
       </div>

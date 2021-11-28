@@ -13,6 +13,7 @@ import ToolBar from './toolbar'
 import ErrorPage from './pages/errorpage';
 import Registration from './pages/auth/register';
 import Login from './pages/auth/login';
+import Profile from './pages/profile';
 
 class App extends Component {
   render() {
@@ -27,7 +28,7 @@ class App extends Component {
       <Route path="/Search" element={<Registration/>} />
       <Route path="/Register" element={<Registration/>} />
       <Route path="/Login" element={<Login/>} />
-      <Route path="/Profile" element={<Registration/>} />
+      <Route path="/Profile" element={<Profile/>} />
       <Route path="/404" element={<ErrorPage/>}/>
       <Route path="*" element={<Navigate replace to="404"/>} />
     </Routes>

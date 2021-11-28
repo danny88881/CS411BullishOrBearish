@@ -1,20 +1,22 @@
 import React, { Component } from "react";
-import {
-  Routes,
-  Route,
-  Navigate,
-  Link,
-  NavLink
-} from "react-router-dom"
+
 import axios from "axios";
 import bcrypt from "bcryptjs"
+
+function redir() {
+  const userId = localStorage.getItem('userId')
+  if (userId == 'undefined') {
+  } else {
+    document.location.href = "/Profile";
+  }
+}
 
 // resource https://www.youtube.com/watch?v=AWLgf_xfd_w
 
 export default class Registration extends Component {
   constructor(props) {
     super(props);
-
+    redir();
     this.state = {
       first_name: "",
       last_name: "",
@@ -33,17 +35,19 @@ export default class Registration extends Component {
     event.preventDefault();
     if (this.state.password == this.state.password_confirmation) {
       const hashedPassword = bcrypt.hashSync(this.state.password, '$2a$10$CwTycUxWue0Ohq9StjUM0u')
-      axios.post('http://localhost:3002/api/register', {first_name: this.state.first_name, last_name: this.state.last_name, email: this.state.email, password: hashedPassword},
+      axios.post('http://localhost:3002/api/register', {first_name: this.state.first_name, last_name: this.state.last_name, email: this.state.email, password: hashedPassword}
       ).then(
         response => {
           console.log("registration reg", response);
           if(response.data.code) {
             this.setState({registration_errors: true});
           } else {
-            axios.post('http://localhost:3002/api/register', {first_name: this.state.first_name, last_name: this.state.last_name, email: this.state.email, password: hashedPassword},
-      )
-            localStorage.setItem('userId', )
-            document.location.href = "/Profile";
+            axios.get('http://localhost:3002/api/getId', {params:{email: this.state.email}}).then(
+              response => {
+                localStorage.setItem('userId', response.data[0].UserId)
+                document.location.href = "/Profile";
+              }
+            )
           }
         }
       ).catch(
