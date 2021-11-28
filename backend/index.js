@@ -20,8 +20,25 @@ app.use(express.json());
 //console.log(process.env);
 
 app.get('/api/getId', (require, response) => {
+  const email = require.query.email
   const sqlSelect = "SELECT UserId FROM User WHERE Email = ?";
-  db.query(sqlSelect, (err, result) => {
+  db.query(sqlSelect, [email], (err, result) => {
+    response.send(result);
+  });
+})
+
+app.get('/api/getUserData', (require, response) => {
+  const id = require.query.UserId
+  const sqlSelect = "SELECT FirstName, LastName, Email, JoinDate FROM User WHERE UserId = ?";
+  db.query(sqlSelect, [id], (err, result) => {
+    response.send(result);
+  });
+})
+
+app.get('/api/getPassword', (require, response) => {
+  const email = require.query.email
+  const sqlSelect = "SELECT Password FROM User WHERE Email = ?";
+  db.query(sqlSelect, [email], (err, result) => {
     response.send(result);
   });
 })
