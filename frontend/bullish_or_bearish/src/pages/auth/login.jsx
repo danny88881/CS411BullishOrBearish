@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs"
 
 function redir() {
   const userId = localStorage.getItem('userId')
-  if (userId == 'undefined') {
+  if (userId == 'undefined' || userId == null) {
   } else {
     document.location.href = "/Profile";
   }

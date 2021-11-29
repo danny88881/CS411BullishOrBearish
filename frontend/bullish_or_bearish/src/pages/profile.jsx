@@ -10,7 +10,7 @@ import {
 
 function redir() {
   const userId = localStorage.getItem('userId')
-  if (userId == 'undefined') {
+  if (userId == 'undefined' || userId == null) {
     document.location.href = "/Login";
   } else {
     console.log("OK")
@@ -37,10 +37,12 @@ export default class Profile extends Component {
     axios.get('http://localhost:3002/api/getUserData', {params:{UserId: userId}}).then(
       response => {
         console.log(response)
-        this.setState({first_name: response.data[0].FirstName});
-        this.setState({last_name: response.data[0].LastName});
-        this.setState({email: response.data[0].Email});
-        this.setState({join_date: response.data[0].JoinDate});
+        if (response.data.length > 0) {
+          this.setState({first_name: response.data[0].FirstName});
+          this.setState({last_name: response.data[0].LastName});
+          this.setState({email: response.data[0].Email});
+          this.setState({join_date: response.data[0].JoinDate});
+        }
       }
     )
   }

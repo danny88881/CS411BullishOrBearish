@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs"
 
 function redir() {
   const userId = localStorage.getItem('userId')
-  if (userId == 'undefined') {
+  if (userId == 'undefined' || userId == null) {
   } else {
     document.location.href = "/Profile";
   }
@@ -44,8 +44,10 @@ export default class Registration extends Component {
           } else {
             axios.get('http://localhost:3002/api/getId', {params:{email: this.state.email}}).then(
               response => {
-                localStorage.setItem('userId', response.data[0].UserId)
-                document.location.href = "/Profile";
+                if (response.data.length > 0) {
+                  localStorage.setItem('userId', response.data[0].UserId)
+                  document.location.href = "/Profile";
+                }
               }
             )
           }

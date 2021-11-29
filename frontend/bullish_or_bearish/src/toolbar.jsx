@@ -9,7 +9,7 @@ import {
 
 
 function ToolBar() {
-  var logged_in = localStorage.getItem('userId') != 'undefined'
+  var logged_in = localStorage.getItem('userId') != 'undefined' && localStorage.getItem('userId') != null
   return (
     <div class="ToolBar">
       <ul>
