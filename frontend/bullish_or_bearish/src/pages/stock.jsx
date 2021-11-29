@@ -11,6 +11,8 @@ const Stock = () => {
   const [content, setContent] = useState("");
   const [comments, setComments] = useState([]);
 
+  const [updateContent, setUpdateContent] = useState("");
+
   const submitComment = (e) => {
     e.preventDefault();
     const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -34,12 +36,27 @@ const Stock = () => {
           Axios.get('http://localhost:3002/api/stockcomment', {
             params: {symbol: symbol}
           }).then((res) => {
-            console.log(res.data);
             setComments(res.data);
           });
         });
       });
     });
+  };
+
+  const updateComment = (updateId) => {
+    if (updateContent.length !== 0) {
+      Axios.post('http://localhost:3002/api/update', {
+        commentId: updateId,
+        newContent: updateContent,
+      }).then(()=> {
+        Axios.get('http://localhost:3002/api/stockcomment', {
+          params: {symbol: symbol}
+        }).then((res) => {
+          console.log(res.data);
+          setComments(res.data);
+        });
+      });
+    }
   };
 
   useEffect(() => {
@@ -82,14 +99,21 @@ const Stock = () => {
         <br></br>
         <button onClick={submitComment}>submit comment</button>
 
-      {comments &&
-       comments.map((comment) =>
-         <div>
-           <h1>user: {comment['FirstName'].toLowerCase() + " " + comment['LastName'].toLowerCase()}</h1>
-           <p>{comment['TimePosted']}</p>
-           <p>{comment['Content'].toLowerCase()}</p>
-         </div>
-       )}
+        {comments &&
+         comments.map((comment) =>
+           <div>
+             <h1>user: {comment['FirstName'].toLowerCase() + " " + comment['LastName'].toLowerCase()}</h1>
+             <p>{comment['TimePosted']}</p>
+             <p>{comment['Content'].toLowerCase()}</p>
+             {parseInt(localStorage.getItem('userId')) === comment['UserId'] &&
+              <div>
+                <textarea name="content" cols="50" rows="4" maxlength="256" onChange={(e)=> {
+                  setUpdateContent(e.target.value);
+                } }></textarea>
+                <button onClick={()=>updateComment(comment['CommentId'])}>update</button>
+              </div>}
+           </div>
+         )}
       </div>
     );
   }
