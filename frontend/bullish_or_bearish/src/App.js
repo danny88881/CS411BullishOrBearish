@@ -14,7 +14,7 @@ import ErrorPage from './pages/errorpage';
 import Registration from './pages/auth/register';
 import Login from './pages/auth/login';
 import Profile from './pages/profile';
-
+import Home from './pages/home';
 import Stocks from './pages/stocks';
 
 class App extends Component {
@@ -23,7 +23,7 @@ class App extends Component {
     <>
     <ToolBar />
     <Routes>
-      <Route path="/" />
+      <Route path="/" element={<Home/>}/>
       <Route path="/Registration" element={<Registration/>} />
       <Route path="/Stocks" element={<Stocks/>} />
       <Route path="/Watchlists" element={<Registration/>} />

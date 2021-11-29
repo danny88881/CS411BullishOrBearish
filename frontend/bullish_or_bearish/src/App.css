@@ -114,3 +114,37 @@ button {
 .profile {
   margin: 100px;
 }
+
+.home {
+  display: flex;
+  flex-direction: row;
+  margin: 100px;
+  align-items: center;
+  justify-content: center;
+}
+
+.home .inner{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.home h1 {
+  font-size: 64px;
+}
+
+.home img {
+  margin: 100px;
+  width: 400px;
+  height: 400px;
+  cursor: pointer;
+}
+
+.bull {
+  filter: invert(65%) sepia(78%) saturate(395%) hue-rotate(41deg) brightness(116%) contrast(105%);
+}
+
+.bear {
+  filter: invert(13%) sepia(95%) saturate(6706%) hue-rotate(0deg) brightness(99%) contrast(113%);
+}

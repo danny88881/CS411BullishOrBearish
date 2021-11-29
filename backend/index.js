@@ -43,6 +43,25 @@ app.get('/api/getPassword', (require, response) => {
   });
 })
 
+app.get('/api/getUnvoted', (require, response) => {
+  const id = require.query.UserId
+  const sqlSelect = "SELECT Stock.Symbol FROM Stock LEFT JOIN (SELECT Symbol, UserId FROM StockVote WHERE StockVote.UserId = ?) Voted ON Stock.Symbol = Voted.Symbol WHERE UserID IS NULL";
+  db.query(sqlSelect, [id], (err, result) => {
+    response.send(result);
+  });
+})
+
+app.post('/api/vote', (require, response) => {
+  const id = require.body.UserId
+  const symbol = require.body.Symbol
+  const datetime = new Date().toISOString().slice(0, 19).replace('T', ' ');
+  const bullish = + require.body.Bullish
+  const sqlPost = "INSERT INTO StockVote (`UserId`, `Symbol`, `Date`, `BullishOrBearish`) VALUES (?, ?, ?, ?)"
+  db.query(sqlPost, [id, symbol, datetime, bullish],(err, result) => {
+    response.send(result);
+  });
+})
+
 app.get('/api/get', (require, response) => {
   const sqlSelect = "SELECT * FROM Comment ORDER BY TimePosted DESC LIMIT 5";
   db.query(sqlSelect, (err, result) => {
