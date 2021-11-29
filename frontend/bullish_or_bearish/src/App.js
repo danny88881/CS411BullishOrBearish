@@ -16,6 +16,7 @@ import Login from './pages/auth/login';
 import Profile from './pages/profile';
 
 import Stocks from './pages/stocks';
+import Stock from './pages/stock';
 
 class App extends Component {
   render() {
@@ -26,6 +27,7 @@ class App extends Component {
       <Route path="/" />
       <Route path="/Registration" element={<Registration/>} />
       <Route path="/Stocks" element={<Stocks/>} />
+      <Route path="/Stocks/:symbol" element={<Stock/>} />
       <Route path="/Watchlists" element={<Registration/>} />
       <Route path="/Search" element={<Registration/>} />
       <Route path="/Register" element={<Registration/>} />
