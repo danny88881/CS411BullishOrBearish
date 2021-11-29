@@ -81,6 +81,33 @@ app.post('/api/insert', (require, response) => {
   })
 })
 
+app.get('/api/mostrecentcomment', (request, response) => {
+  const sqlSearch = "SELECT CommentId from Comment ORDER BY TimePosted DESC LIMIT 1;";
+  db.query(sqlSearch, (err, result) => {
+    console.log(err);
+    response.send(result);
+  });
+});
+
+app.post('/api/stockcomment', (request, response) => {
+  const symbol = request.body.symbol;
+  const commentId = request.body.commentId;
+  const sqlInsert = "INSERT INTO StockComment VALUES (?, ?);";
+  db.query(sqlInsert, [symbol, commentId], (err, result) => {
+    console.log(err);
+    response.send(result);
+  });
+});
+
+app.get('/api/stockcomment', (request, response) => {
+  const symbol = request.query.symbol;
+  const sqlSearch = "SELECT FirstName, LastName, UserId, Content, TimePosted, CommentId from Comment c NATURAL JOIN StockComment NATURAL JOIN User WHERE Symbol = ? ORDER BY c.TimePosted DESC";
+  db.query(sqlSearch, [symbol], (err, result) => {
+    console.log(err);
+    response.send(result);
+  });
+});
+
 app.post('/api/update', (require, response) => {
   const commentId = require.body.commentId;
   const newContent = require.body.newContent;

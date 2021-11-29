@@ -8,6 +8,40 @@ const Stock = () => {
   const [sector, setSector] = useState(null);
   const [industry, setIndustry] = useState(null);
 
+  const [content, setContent] = useState("");
+  const [comments, setComments] = useState([]);
+
+  const submitComment = (e) => {
+    e.preventDefault();
+    const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const userId = localStorage.getItem('userId');
+
+    // create a new comment
+    Axios.post('http://localhost:3002/api/insert', {
+      userId: userId,
+      content: content,
+      date: date,
+      likeCount: 0
+    }).then(() => {
+      // get the id to which the StockComment will be associated
+      Axios.get('http://localhost:3002/api/mostrecentcomment').then((res) => {
+        // insert into the StockComment table
+        Axios.post('http://localhost:3002/api/stockcomment', {
+          symbol: symbol,
+          commentId: res.data[0].CommentId
+        }).then(() => {
+          // refresh comments
+          Axios.get('http://localhost:3002/api/stockcomment', {
+            params: {symbol: symbol}
+          }).then((res) => {
+            console.log(res.data);
+            setComments(res.data);
+          });
+        });
+      });
+    });
+  };
+
   useEffect(() => {
     Axios.post('http://localhost:3002/api/stock/search', {
       stockSymbol: symbol
@@ -16,11 +50,17 @@ const Stock = () => {
         // TODO: redirect to 404?
       } else {
         const retrievedStock = res.data[0];
-        console.log(retrievedStock);
         setName(retrievedStock['Name']);
         setSector(retrievedStock['Sector']);
         setIndustry(retrievedStock['Industry']);
       }
+    });
+
+    Axios.get('http://localhost:3002/api/stockcomment', {
+      params: {symbol: symbol}
+    }).then((res) => {
+      console.log(res.data);
+      setComments(res.data);
     });
   }, []);
 
@@ -33,6 +73,23 @@ const Stock = () => {
         <p>name: {name}</p>
         <p>sector: {sector}</p>
         <p>industry: {industry}</p>
+        <br></br>
+
+        <h1>comments:</h1>
+        <textarea name="content" cols="40" rows="5" maxlength="256"
+                  onChange={(e) => setContent(e.target.value)}
+                  style={{color: "black"}}></textarea>
+        <br></br>
+        <button onClick={submitComment}>submit comment</button>
+
+      {comments &&
+       comments.map((comment) =>
+         <div>
+           <h1>user: {comment['FirstName'].toLowerCase() + " " + comment['LastName'].toLowerCase()}</h1>
+           <p>{comment['TimePosted']}</p>
+           <p>{comment['Content'].toLowerCase()}</p>
+         </div>
+       )}
       </div>
     );
   }
