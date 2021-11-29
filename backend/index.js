@@ -130,8 +130,9 @@ app.post('/api/stocks', (request, response) => {
 
 app.post('/api/stock/search', (request, response) => {
   const stockSymbol = request.body.stockSymbol;
-  const sqlSearch = "SELECT * FROM Stock WHERE Symbol LIKE ?";
-  db.query(sqlSearch, [stockSymbol], (err, result) => {
+  const sqlSearch = "SELECT * FROM Stock WHERE Symbol LIKE " + db.escape('%'+stockSymbol+'%');
+  db.query(sqlSearch, (err, result) => {
+    console.log(sqlSearch);
     console.log(err);
     response.send(result);
   })

@@ -17,6 +17,7 @@ import Profile from './pages/profile';
 import Home from './pages/home';
 import Stocks from './pages/stocks';
 import Stock from './pages/stock';
+import Search from './pages/search';
 
 class App extends Component {
   render() {
@@ -29,7 +30,7 @@ class App extends Component {
       <Route path="/Stocks" element={<Stocks/>} />
       <Route path="/Stocks/:symbol" element={<Stock/>} />
       <Route path="/Watchlists" element={<Registration/>} />
-      <Route path="/Search" element={<Registration/>} />
+      <Route path="/Search" element={<Search/>} />
       <Route path="/Register" element={<Registration/>} />
       <Route path="/Login" element={<Login/>} />
       <Route path="/Profile" element={<Profile/>} />
