@@ -156,6 +156,32 @@ app.post('/api/stock/search', (request, response) => {
   })
 });
 
+app.get('/api/stock/bullish', (request, response) => {
+  const stockSymbol = request.query.Symbol
+  const sqlGet = "SELECT COUNT(BullishOrBearish) as Bullish \
+  FROM Stock NATURAL JOIN StockVote \
+  WHERE BullishOrBearish = 1 \
+  GROUP BY Symbol \
+  HAVING Symbol = ?";
+  db.query(sqlGet, [stockSymbol], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
+app.get('/api/stock/bearish', (request, response) => {
+  const stockSymbol = request.query.Symbol
+  const sqlGet = "SELECT COUNT(BullishOrBearish) as Bearish \
+  FROM Stock NATURAL JOIN StockVote \
+  WHERE BullishOrBearish = 0 \
+  GROUP BY Symbol \
+  HAVING Symbol = ?";
+  db.query(sqlGet, [stockSymbol], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
 app.post('/api/advanced1', (request, response) => {
   const bullishOrBearish = request.body.bullishOrBearish;
   const sqlAdvanced1 = "SELECT s.Sector, Count(v.Symbol) as NumVotes FROM  StockVote v Natural JOIN Stock s WHERE v.BullishOrBearish = ? GROUP by s.Sector Order by NumVotes DESC LIMIT 5;";
@@ -168,7 +194,7 @@ app.post('/api/advanced1', (request, response) => {
 app.post('/api/advanced2', (request, response) => {
   const bullishOrBearish = request.body.bullishOrBearish;
   console.log(bullishOrBearish);
-  const sqlAdvanced2 = "SELECT Symbol, COUNT(Symbol) as NumVotes FROM (SELECT s.Symbol as Symbol, v.Date as Date FROM Stock s NATURAL JOIN StockVote v WHERE v.Date >= ?) as VotesOctAndAfter GROUP BY Symbol ORDER BY NumVotes DESC;";
+  const sqlAdvanced2 = "SELECT Symbol, COUNT(Symbol) as NumVotes FROM (SELECT s.Symbol as Symbol, v.Date as Date FROM Stock s NATURAL JOIN StockVote v WHERE v.Date >= ?) as VotesOctAndAfter GROUP BY Symbol ORDER BY NumVotes DESC LIMIT 5;";
   db.query(sqlAdvanced2, [bullishOrBearish], (err, result) => {
     console.log(err);
     response.send(result);

@@ -173,3 +173,44 @@ button {
   margin-bottom: 50px;
   cursor: pointer;
 }
+
+.commentBox {
+  resize: none;
+  color: black;
+  font-size: 16px;
+  width: 500px;
+  height: 100px;
+}
+
+.stock {
+  margin: 60px;
+}
+
+.stock h1 {
+  font-size: 128px;  
+  height: 80px;
+}
+
+.stock h2 {
+  font-size: 32px; 
+}
+
+.stock .score {
+  display: inline-flex;
+  flex-direction: column;
+  position: relative;
+  top: -80px;
+}
+
+.stock .update {
+  display: flex;
+  flex-direction: column;
+}
+
+.stock button {
+  font-size: 16px;
+}
+
+.stock .update button {
+  width: 100px;
+}

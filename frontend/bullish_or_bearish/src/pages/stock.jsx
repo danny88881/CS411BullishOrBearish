@@ -4,9 +4,11 @@ import Axios from 'axios';
 
 const Stock = () => {
   let { symbol } = useParams();
-  const [name, setName] = useState(null);
-  const [sector, setSector] = useState(null);
-  const [industry, setIndustry] = useState(null);
+  const [name, setName] = useState("");
+  const [sector, setSector] = useState("");
+  const [industry, setIndustry] = useState("");
+  const [bull, setBull] = useState(0);
+  const [bear, setBear] = useState(0);
 
   const [content, setContent] = useState("");
   const [comments, setComments] = useState([]);
@@ -81,33 +83,57 @@ const Stock = () => {
     });
   }, []);
 
+  useEffect(() => {
+    Axios.get('http://localhost:3002/api/stock/bearish', {params:{
+      Symbol: symbol
+    }}).then((res)=> {
+      if (res.data.length === 0) {
+      } else {
+        const retrievedStock = res.data[0];
+        setBear(retrievedStock['Bearish'])
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    Axios.get('http://localhost:3002/api/stock/bullish', {params:{
+      Symbol: symbol
+    }}).then((res)=> {
+      if (res.data.length === 0) {
+      } else {
+        console.log(res.data)
+        const retrievedStock = res.data[0];
+        setBull(retrievedStock['Bullish'])
+      }
+    });
+  }, []);
+
   if (name === null) {
     return <p>not found</p>;
   } else {
     return (
-      <div>
-        <h1>symbol: {symbol}</h1>
-        <p>name: {name}</p>
-        <p>sector: {sector}</p>
-        <p>industry: {industry}</p>
+      <div class="stock">
+        <h1>{symbol.toLowerCase()}<div class="score"><p style={{width:"10px", fontSize:"32px", display:"inline", color:"#adff2f"}}>+{bull}</p><p style={{width:"10px", fontSize:"32px", display:"inline", color:"#ff0000"}}>-{bear}</p></div></h1>
+        <p>{name.toLowerCase()}</p>
+        <p>{sector.toLowerCase()} : {industry.toLowerCase()}</p>
         <br></br>
 
-        <h1>comments:</h1>
-        <textarea name="content" cols="40" rows="5" maxlength="256"
+        <h2>comments</h2>
+        <textarea class="commentBox" name="content" cols="40" rows="5" maxlength="256"
                   onChange={(e) => setContent(e.target.value)}
-                  style={{color: "black"}}></textarea>
+                  ></textarea>
         <br></br>
         <button onClick={submitComment}>submit comment</button>
 
         {comments &&
          comments.map((comment) =>
            <div>
-             <h1>user: {comment['FirstName'].toLowerCase() + " " + comment['LastName'].toLowerCase()}</h1>
+             <h3>user: {comment['FirstName'].toLowerCase() + " " + comment['LastName'].toLowerCase()}</h3>
              <p>{comment['TimePosted']}</p>
              <p>{comment['Content'].toLowerCase()}</p>
              {parseInt(localStorage.getItem('userId')) === comment['UserId'] &&
-              <div>
-                <textarea name="content" cols="50" rows="4" maxlength="256" onChange={(e)=> {
+              <div class="update">
+                <textarea class="commentBox" name="content" cols="50" rows="4" maxlength="256" onChange={(e)=> {
                   setUpdateContent(e.target.value);
                 } }></textarea>
                 <button onClick={()=>updateComment(comment['CommentId'])}>update</button>

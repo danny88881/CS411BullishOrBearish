@@ -6,6 +6,7 @@ const Stocks = () => {
   const [stockOrderBy, setStockOrderBy] = useState("Symbol");
 
   const [topStocks, setTopStocks] = useState([]);
+  const [topVotes, setTopVotes] = useState([]);
 
   useEffect(() => {
     Axios.post('http://localhost:3002/api/stocks', {
@@ -22,7 +23,21 @@ const Stocks = () => {
     }).then((res)=> {
       setTopStocks(res.data);
     })
-  });
+  }, []);
+
+  useEffect(() => {
+    const today = new Date()
+    const lastWeek = new Date(today)
+    
+    lastWeek.setDate(lastWeek.getDate() - 7)
+    
+    const date = lastWeek.toISOString().slice(0, 19).replace('T', ' ');
+    Axios.post('http://localhost:3002/api/advanced2', {
+      bullishOrBearish: date
+    }).then((res)=> {
+      setTopVotes(res.data);
+    })
+  }, []);
 
   return (
     <div class="stockpage">
@@ -37,7 +52,19 @@ const Stocks = () => {
         </table>
       }
 
-      <h1>top 50 stocks</h1>
+      <h2>top 5 voted stocks in past week</h2>
+      {
+        topVotes?
+        <table>
+          {
+            topVotes.map((sectorResult) => {
+              return <tr><td>{sectorResult.Symbol.toLowerCase()}</td>:<td>{sectorResult.NumVotes}</td></tr>;
+            })
+          }
+        </table> : <p></p>
+      }
+
+      <h1>top 50 scoring stocks</h1>
 
       {stocks &&
        stocks.map((stock) =>
