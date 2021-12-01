@@ -84,6 +84,14 @@ const Stock = () => {
   }, []);
 
   useEffect(() => {
+    Axios.get('http://localhost:3002/api/getStock').then((res) => {
+      console.log("APPLE");
+    }).catch((err) => {
+      console.log("BANA");
+    });
+  }, []);
+
+  useEffect(() => {
     Axios.get('http://localhost:3002/api/stock/bearish', {params:{
       Symbol: symbol
     }}).then((res)=> {

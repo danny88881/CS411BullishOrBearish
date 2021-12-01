@@ -1,10 +1,26 @@
 require('dotenv').config()
+var util = require('util');
+
+require('colors');
+
+var _ = require('lodash');
+var googleFinance = require('google-finance');
 
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const mysql = require("mysql");
 const cors = require("cors");
+  
+
+var SYMBOLS = [
+  'NASDAQ:AAPL',
+  'NASDAQ:GOOGL',
+  'NASDAQ:MSFT',
+  'NASDAQ:YHOO',
+  'NYSE:IBM',
+  'NYSE:TWTR'
+];
 
 var db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -18,6 +34,30 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.json());
 
 //console.log(process.env);
+
+app.get('/api/getStock', (require, response) => {
+  googleFinance.companyNews({
+    symbols: SYMBOLS
+  }, function (err, result) {
+    if (err) { throw err; }
+    _.each(result, function (news, symbol) {
+      console.log(util.format(
+        '=== %s (%d) ===',
+        symbol,
+        news.length
+      ).cyan);
+      if (news[0]) {
+        console.log(
+          '%s\n...\n%s',
+          JSON.stringify(news[0], null, 2),
+          JSON.stringify(news[news.length - 1], null, 2)
+        );
+      } else {
+        console.log('N/A');
+      }
+    });
+  });
+})
 
 app.get('/api/getId', (require, response) => {
   const email = require.query.email
