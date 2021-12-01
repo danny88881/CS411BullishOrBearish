@@ -179,7 +179,7 @@ app.post('/api/register', (require, response) => {
   })
 })
 
-app.get('/api/watchlist', (request, response) => {
+app.post('/api/watchlist', (request, response) => {
   const sql = "SELECT * from Watchlist";
   db.query(sql, (err, result) => {
     console.log(err);
@@ -187,7 +187,7 @@ app.get('/api/watchlist', (request, response) => {
   })
 });
 
-app.post('/api/favoritewatchlist', (request, response) => {
+app.get('/api/favoritewatchlist', (request, response) => {
   const sql = "INSERT into WatchlistFavorite VALUES (?, ?)";
   const userId = request.body.UserId;
   const listId = request.body.ListId;
