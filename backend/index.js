@@ -121,6 +121,24 @@ app.post('/api/update', (require, response) => {
 
 app.post('/api/stocks', (request, response) => {
   const stockOrderBy = request.body.stockOrderBy;
+  const sqlSearch = "SELECT Symbol, Name, Sector, Industry, (COUNT(BullishOrBearish) \
+  - (SELECT COUNT(BullishOrBearish) \
+  FROM Stock NATURAL JOIN StockVote \
+  WHERE BullishOrBearish = 0 AND Symbol = a.Symbol \
+  GROUP BY Symbol)) as Score \
+  FROM Stock as a NATURAL JOIN StockVote \
+  WHERE BullishOrBearish = 1 \
+  GROUP BY Symbol \
+  ORDER BY Score DESC \
+  LIMIT 50";
+  db.query(sqlSearch, [stockOrderBy], (err, result) => {
+    console.log(err);
+    response.send(result);
+  });
+});
+
+app.post('/api/stock', (request, response) => {
+  const stockOrderBy = request.body.stockOrderBy;
   const sqlSearch = "SELECT * FROM Stock ORDER BY ?";
   db.query(sqlSearch, [stockOrderBy], (err, result) => {
     console.log(err);
@@ -140,7 +158,7 @@ app.post('/api/stock/search', (request, response) => {
 
 app.post('/api/advanced1', (request, response) => {
   const bullishOrBearish = request.body.bullishOrBearish;
-  const sqlAdvanced1 = "SELECT s.Sector, Count(v.Symbol) as NumVotes FROM  StockVote v Natural JOIN Stock s WHERE v.BullishOrBearish = ? GROUP by s.Sector Order by NumVotes DESC LIMIT 15;";
+  const sqlAdvanced1 = "SELECT s.Sector, Count(v.Symbol) as NumVotes FROM  StockVote v Natural JOIN Stock s WHERE v.BullishOrBearish = ? GROUP by s.Sector Order by NumVotes DESC LIMIT 5;";
   db.query(sqlAdvanced1, [bullishOrBearish], (err, result) => {
     console.log(err);
     response.send(result);
@@ -182,3 +200,4 @@ app.post('/api/register', (require, response) => {
 app.listen(3002, () => {
   console.log("Running on port 3002")
 });
+

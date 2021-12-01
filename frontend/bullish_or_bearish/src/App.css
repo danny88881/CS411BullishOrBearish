@@ -4,6 +4,7 @@
 * {
   font-family: "Major Mono Display", "Open Sans", sans-serif;
   color: whitesmoke;
+  max-width: 100%;
 }
 
 .noselect {
@@ -147,4 +148,28 @@ button {
 
 .bear {
   filter: invert(13%) sepia(95%) saturate(6706%) hue-rotate(0deg) brightness(99%) contrast(113%);
+}
+
+.stockpage {
+  margin: 100px;
+  overflow: hidden;
+}
+
+.stockpage h1 {
+  font-size: 64px;
+}
+
+.stockpage h2 {
+  font-size: 32px;
+}
+
+.stockpage p {
+  font-size: 24px;
+}
+
+.stockdisplay {
+  width: 800px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  cursor: pointer;
 }
