@@ -34,74 +34,72 @@ export default class Watchlists extends Component {
     }
   }
 
-  favorites() {
+  favorites = () => {
     const userId = localStorage.getItem('userId')
     axios.get('http://localhost:3002/api/getFavoriteLists', {params:{UserId: userId}}).then(
       response => {
-        console.log(response)
-        if (response.data.length > 0) {
-          this.setState({favorites: response.data});
-        }
+        this.setState({favorites: response.data});
       }
     )
   }
 
-  others() {
+  others = () => {
     const userId = localStorage.getItem('userId')
     axios.get('http://localhost:3002/api/watchlist', {params:{UserId: userId}}).then(
       response => {
-        console.log(response)
-        if (response.data.length > 0) {
-          this.setState({others: response.data});
-        }
+        this.setState({others: response.data});
       }
     );
   }
 
-  favorite(ListId) {
+  favorite = (ListId) => {
     const userId = localStorage.getItem('userId')
     axios.post('http://localhost:3002/api/favoritewatchlist', {UserId: userId, ListId: ListId}).then(
-      this.favorites(),
-      this.others()
+      (response) => {
+        this.favorites();
+        this.others();
+      }
     );
   }
 
-  unfavorite(ListId) {
+  unfavorite = (ListId) => {
     const userId = localStorage.getItem('userId')
     axios.post('http://localhost:3002/api/unfavoritewatchlist', {UserId: userId, ListId: ListId}).then(
-      this.favorites(),
-      this.others()
+      (response) => {
+        this.favorites();
+        this.others();
+      }
     );
   }  
 
   render () {
     return (
-      <div>
+      <div class="menu">
         <div class="createwatchlist" onClick={() => {document.location.href = "/CreateWatchlist"}}>
-          <h1>create watchlist</h1>
+          <button>create a wAtchlist</button>
         </div>
         <hr></hr>
-        <h1>your watchList favorites</h1>
+        <h1>your favorite wAtchlists</h1>
         {this.state.favorites &&
          this.state.favorites.map((favorite) =>
            <div>
              <div class="viewwatchlist" onClick={() => {document.location.href = "/WatchLists/" + favorite['ListId']}}>
-               <h1>Name: {favorite['Title']}</h1>
-               <p>Description: {favorite['Description'].toLowerCase()}</p>
+               <h1>{favorite['Title']}</h1>
+               <p>{favorite['Description'].toLowerCase()}</p>
              </div>
-             <button type="button" onClick={()=>{this.unfavorite(favorite['ListId'])}}>unfavorite this</button>  
+             <button class="addButton" type="button" onClick={()=>{this.unfavorite(favorite['ListId'])}}>unfavorite</button>  
            </div>
          )}
         <hr></hr>
-        <h1>discover new Watchlists</h1>
+        <h1>discover new wAtchlists</h1>
         {this.state.others &&
          this.state.others.map((other) =>
            <div>
              <div class="viewwatchlist" onClick={() => {document.location.href = "/WatchLists/" + other['ListId']}}>
-               <h1>Name: {other['Title']}</h1>
-               <p>Description: {other['Description'].toLowerCase()}</p>
+               <h1>{other['Title']}</h1>
+               <p>{other['Description'].toLowerCase()}</p>
              </div>
-             <button type="button" onClick={()=>{this.favorite(other['ListId'])}}>favorite this</button>
+             <button class="addButton" type="button" onClick={()=>{this.favorite(other['ListId'])}}>favorite this</button>
            </div>
          )}
       </div>

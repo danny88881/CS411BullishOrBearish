@@ -1,26 +1,10 @@
 require('dotenv').config()
-var util = require('util');
-
-require('colors');
-
-var _ = require('lodash');
-var googleFinance = require('google-finance');
 
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const mysql = require("mysql");
 const cors = require("cors");
-  
-
-var SYMBOLS = [
-  'NASDAQ:AAPL',
-  'NASDAQ:GOOGL',
-  'NASDAQ:MSFT',
-  'NASDAQ:YHOO',
-  'NYSE:IBM',
-  'NYSE:TWTR'
-];
 
 var db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -41,30 +25,6 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.json());
 
 //console.log(process.env);
-
-app.get('/api/getStock', (require, response) => {
-  googleFinance.companyNews({
-    symbols: SYMBOLS
-  }, function (err, result) {
-    if (err) { throw err; }
-    _.each(result, function (news, symbol) {
-      console.log(util.format(
-        '=== %s (%d) ===',
-        symbol,
-        news.length
-      ).cyan);
-      if (news[0]) {
-        console.log(
-          '%s\n...\n%s',
-          JSON.stringify(news[0], null, 2),
-          JSON.stringify(news[news.length - 1], null, 2)
-        );
-      } else {
-        console.log('N/A');
-      }
-    });
-  });
-})
 
 app.get('/api/getId', (require, response) => {
   const email = require.query.email
@@ -145,6 +105,26 @@ app.post('/api/stockcomment', (request, response) => {
     response.send(result);
   });
 });
+
+app.get('/api/getManagedWatchlists', (request, response) => {
+  const userId = request.query.userId;
+  const symbol = request.query.symbol;
+  const sqlGet = "SELECT ListId, Title FROM Watchlist WHERE CreatorId = ? AND ListId NOT IN (SELECT ListId FROM WatchlistStock WHERE Symbol = ?)";
+  db.query(sqlGet, [userId, symbol], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+})
+
+app.get('/api/getManagedWatchlistsAlrIn', (request, response) => {
+  const userId = request.query.userId;
+  const symbol = request.query.symbol;
+  const sqlGet = "SELECT ListId, Title FROM Watchlist WHERE CreatorId = ? AND ListId IN (SELECT ListId FROM WatchlistStock WHERE Symbol = ?)";
+  db.query(sqlGet, [userId, symbol], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+})
 
 app.post('/api/watchlistcomment', (request, response) => {
   const listid = request.body.listid
@@ -300,7 +280,7 @@ app.post('/api/advanced1', (request, response) => {
 app.post('/api/advanced2', (request, response) => {
   const bullishOrBearish = request.body.bullishOrBearish;
   console.log(bullishOrBearish);
-  const sqlAdvanced2 = "SELECT Symbol, COUNT(Symbol) as NumVotes FROM (SELECT s.Symbol as Symbol, v.Date as Date FROM Stock s NATURAL JOIN StockVote v WHERE v.Date >= ?) as VotesOctAndAfter GROUP BY Symbol ORDER BY NumVotes DESC;";
+  const sqlAdvanced2 = "SELECT Symbol, COUNT(Symbol) as NumVotes FROM (SELECT s.Symbol as Symbol, v.Date as Date FROM Stock s NATURAL JOIN StockVote v WHERE v.Date >= ?) as VotesOctAndAfter GROUP BY Symbol ORDER BY NumVotes DESC LIMIT 5;";
   db.query(sqlAdvanced2, [bullishOrBearish], (err, result) => {
     console.log(err);
     response.send(result);
@@ -471,7 +451,7 @@ app.get('/api/othercommunities', (request, response) => {
 app.post('/api/joincommunity', (request, response) => {
   const communityId = request.body.communityId;
   const userId = request.body.userId;
-  const sql = "INSERT INTO CommunityMember VALUES (?, ?, 0);";
+  const sql = "INSERT INTO CommunityMember VALUES (?, ?, 0, 0);";
   db.query(sql, [userId, communityId], (err, result) => {
     console.log(err);
     response.send(result);

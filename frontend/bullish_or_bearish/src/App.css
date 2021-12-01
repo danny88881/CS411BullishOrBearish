@@ -182,6 +182,21 @@ button {
   height: 100px;
 }
 
+.commentButton {
+  width: 100px;
+  font-size: 16px;
+}
+
+.update {
+  display: flex;
+  flex-direction: column;
+}
+
+.update button {
+  width: 100px;
+  font-size: 16px;
+}
+
 .stock {
   margin: 60px;
 }
@@ -202,15 +217,27 @@ button {
   top: -80px;
 }
 
-.stock .update {
-  display: flex;
-  flex-direction: column;
-}
-
 .stock button {
   font-size: 16px;
 }
 
-.stock .update button {
-  width: 100px;
+.menu {
+  padding: 50px;
+}
+
+.addButton {
+  font-size: 16px;
+}
+
+.viewwatchlist {
+  cursor: pointer;
+}
+
+.addToWatchlist select {
+  color: black;
+  font-size: 16px;
+}
+
+.addToWatchlist option {
+  color: black;
 }

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { useParams } from "react-router-dom";
 import Axios from 'axios';
+import Watchlists from "./watchlists";
 
 const Stock = () => {
   let { symbol } = useParams();
@@ -12,6 +13,8 @@ const Stock = () => {
 
   const [content, setContent] = useState("");
   const [comments, setComments] = useState([]);
+  const [watchlists, setWatchlists] = useState([]);
+  const [watchlistsIn, setWatchlistsIn] = useState([]);
 
   const [updateContent, setUpdateContent] = useState("");
 
@@ -84,14 +87,6 @@ const Stock = () => {
   }, []);
 
   useEffect(() => {
-    Axios.get('http://localhost:3002/api/getStock').then((res) => {
-      console.log("APPLE");
-    }).catch((err) => {
-      console.log("BANA");
-    });
-  }, []);
-
-  useEffect(() => {
     Axios.get('http://localhost:3002/api/stock/bearish', {params:{
       Symbol: symbol
     }}).then((res)=> {
@@ -116,6 +111,32 @@ const Stock = () => {
     });
   }, []);
 
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    Axios.get('http://localhost:3002/api/getManagedWatchlists', {params:{
+      userId: userId,
+      symbol: symbol
+    }}).then((res)=> {
+      if (res.data.length === 0) {
+      } else {
+        setWatchlists(res.data);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    Axios.get('http://localhost:3002/api/getManagedWatchlistsAlrIn', {params:{
+      userId: userId,
+      symbol: symbol
+    }}).then((res)=> {
+      if (res.data.length === 0) {
+      } else {
+        setWatchlistsIn(res.data);
+      }
+    });
+  }, []);
+
   if (name === null) {
     return <p>not found</p>;
   } else {
@@ -125,6 +146,30 @@ const Stock = () => {
         <p>{name.toLowerCase()}</p>
         <p>{sector.toLowerCase()} : {industry.toLowerCase()}</p>
         <br></br>
+
+        <div class="addToWatchlist" style={{display: watchlists.length>0 ? "block":"none"}}>
+        <select name="watchlist" id="watchlist">
+          {watchlists &&
+          watchlists.map((watchlist) =>
+            <option value={watchlist["ListId"]}>
+              {watchlist["Title"]}
+            </option>
+         )}
+        </select>
+        <button>add</button>
+        </div>
+
+        <div class="addToWatchlist" style={{display: watchlistsIn.length>0 ? "block":"none"}}>
+        <select name="watchlist" id="watchlist">
+          {watchlistsIn &&
+          watchlistsIn.map((watchlist) =>
+            <option value={watchlist["ListId"]}>
+              {watchlist["Title"]}
+            </option>
+         )}
+        </select>
+        <button>remove</button>
+        </div>
 
         <h2>comments</h2>
         <textarea class="commentBox" name="content" cols="40" rows="5" maxlength="256"

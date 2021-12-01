@@ -31,12 +31,12 @@ const Community = () => {
       Axios.get('http://localhost:3002/api/mostrecentcomment').then((res) => {
         // insert into the CommunityComment table
         Axios.post('http://localhost:3002/api/communitycomment', {
-          communityid: communityid,
+          communityid: parseInt(communityid),
           commentId: res.data[0].CommentId
         }).then(() => {
           // refresh comments
           Axios.get('http://localhost:3002/api/communitycomment', {
-            params: {communityid: communityid}
+            params: {communityid: parseInt(communityid)}
           }).then((res) => {
             setComments(res.data);
           });
