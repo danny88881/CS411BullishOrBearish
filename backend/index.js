@@ -395,16 +395,20 @@ app.get('/api/stock/bearish', (request, response) => {
 
 app.get('/api/getWatchlistScore', (request, response) => {
   const listId = request.query.listid;
-  const sql = "SELECT SUM(Score) as Score FROM (SELECT Symbol, Name, Sector, Industry, (COUNT(BullishOrBearish) \
+  const sql = "SELECT SUM(Score) as Score\
+  FROM\
+  (SELECT Symbol, Name, Sector, Industry,\
+    (IFNULL((SELECT COUNT(BullishOrBearish) \
+    FROM Stock NATURAL JOIN StockVote \
+    WHERE BullishOrBearish = 1 AND Symbol = a.Symbol \
+    GROUP BY Symbol), 0) \
   - (SELECT COUNT(BullishOrBearish) \
-  FROM Stock NATURAL JOIN StockVote \
-  WHERE BullishOrBearish = 0 AND Symbol = a.Symbol \
-  GROUP BY Symbol)) as Score \
+    FROM Stock NATURAL JOIN StockVote \
+    WHERE BullishOrBearish = 0 AND Symbol = a.Symbol \
+    GROUP BY Symbol)) as Score \
   FROM Stock as a NATURAL JOIN StockVote \
-  WHERE BullishOrBearish = 1 \
   GROUP BY Symbol \
-  ORDER BY Score DESC \
-  LIMIT 50) as v NATURAL JOIN WatchlistStock where ListId = ?";
+  ORDER BY Score DESC) as v NATURAL JOIN WatchlistStock where ListId = ?";
   db.query(sql, [listId], (err, result) => {
     console.log(err);
     console.log(result);
@@ -414,16 +418,20 @@ app.get('/api/getWatchlistScore', (request, response) => {
 
 app.get('/api/getWatchlistStocks', (request, response) => {
   const listId = request.query.listid;
-  const sql = "SELECT * FROM (SELECT Symbol, Name, Sector, Industry, (COUNT(BullishOrBearish) \
+  const sql = "SELECT *\
+  FROM\
+  (SELECT Symbol, Name, Sector, Industry,\
+    (IFNULL((SELECT COUNT(BullishOrBearish) \
+      FROM Stock NATURAL JOIN StockVote \
+      WHERE BullishOrBearish = 1 AND Symbol = a.Symbol \
+      GROUP BY Symbol), 0) \
   - (SELECT COUNT(BullishOrBearish) \
-  FROM Stock NATURAL JOIN StockVote \
-  WHERE BullishOrBearish = 0 AND Symbol = a.Symbol \
-  GROUP BY Symbol)) as Score \
+    FROM Stock NATURAL JOIN StockVote \
+    WHERE BullishOrBearish = 0 AND Symbol = a.Symbol \
+    GROUP BY Symbol)) as Score \
   FROM Stock as a NATURAL JOIN StockVote \
-  WHERE BullishOrBearish = 1 \
   GROUP BY Symbol \
-  ORDER BY Score DESC \
-  LIMIT 50) as v NATURAL JOIN WatchlistStock where ListId = ?";
+  ORDER BY Score DESC) as v NATURAL JOIN WatchlistStock where ListId = ?";
   db.query(sql, [listId], (err, result) => {
     console.log(err);
     console.log(result);
