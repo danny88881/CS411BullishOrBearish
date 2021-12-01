@@ -98,7 +98,7 @@ const Stock = () => {
       if (res.data.length === 0) {
       } else {
         const retrievedStock = res.data[0];
-        setBear(retrievedStock['Bearish'])
+        setBear(retrievedStock['COUNT(*)'])
       }
     });
   }, []);
@@ -111,7 +111,7 @@ const Stock = () => {
       } else {
         console.log(res.data)
         const retrievedStock = res.data[0];
-        setBull(retrievedStock['Bullish'])
+        setBull(retrievedStock["COUNT(*)"])
       }
     });
   }, []);

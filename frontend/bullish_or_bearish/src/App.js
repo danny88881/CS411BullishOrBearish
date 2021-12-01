@@ -18,7 +18,12 @@ import Home from './pages/home';
 import Stocks from './pages/stocks';
 import Stock from './pages/stock';
 import Search from './pages/search';
-import WatchList from './pages/watchlists';
+import WatchLists from './pages/watchlists';
+import WatchList from './pages/watchlist';
+import WatchListCreate from './pages/watchlistcreate';
+import Communities from './pages/communities'
+import Community from './pages/community';
+import CommunityCreate from './pages/communitycreate';
 
 class App extends Component {
   render() {
@@ -30,7 +35,12 @@ class App extends Component {
       <Route path="/Registration" element={<Registration/>} />
       <Route path="/Stocks" element={<Stocks/>} />
       <Route path="/Stocks/:symbol" element={<Stock/>} />
-      <Route path="/Watchlists" element={<WatchList/>} />
+      <Route path="/Watchlists" element={<WatchLists/>} />
+      <Route path="/CreateWatchlist" element={<WatchListCreate/>} />
+      <Route path="/CreateCommunity" element={<CommunityCreate/>} />
+      <Route path="/Watchlists/:listid" element={<WatchList/>} />
+      <Route path="/Communities" element={<Communities/>} />
+      <Route path="/Communities/:communityid" element={<Community/>} />      
       <Route path="/Search" element={<Search/>} />
       <Route path="/Register" element={<Registration/>} />
       <Route path="/Login" element={<Login/>} />
