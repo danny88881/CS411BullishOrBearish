@@ -179,6 +179,33 @@ app.post('/api/register', (require, response) => {
   })
 })
 
+app.get('/api/watchlist', (request, response) => {
+  const sql = "SELECT * from Watchlist";
+  db.query(sql, (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
+app.post('/api/favoritewatchlist', (request, response) => {
+  const sql = "INSERT into WatchlistFavorite VALUES (?, ?)";
+  const userId = request.body.UserId;
+  const listId = request.body.ListId;
+  db.query(sql, [userId, listId], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
+app.get('/api/getFavoriteLists', (request, response) => {
+  const userId = request.body.UserId;
+  const sql = "SELECT * from Watchlist natural join WatchlistFavorite w WHERE w.UserId = ?";
+  db.query(sql, [userId], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
 app.listen(3002, () => {
   console.log("Running on port 3002")
 });
