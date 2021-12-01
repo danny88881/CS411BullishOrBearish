@@ -66,6 +66,35 @@ const Stock = () => {
     }
   };
 
+  const deleteComment = (deleteId) => {
+    Axios.post('http://localhost:3002/api/deletestockcomment', {
+      commentId: deleteId
+    }).then(()=> {
+      Axios.post('http://localhost:3002/api/deletestockcomment', {
+        commentId: deleteId
+      }).then(() => {
+        Axios.get('http://localhost:3002/api/stockcomment', {
+          params: {symbol: symbol}
+        }).then((res) => {
+          setComments(res.data);
+        });
+      });
+    });
+  };  
+
+  const likeComment = (commentId, userId) => {
+    Axios.post('http://localhost:3002/api/likecomment', {
+      commentId: commentId,
+      userId: userId,
+    }).then(()=> {
+      Axios.get('http://localhost:3002/api/stockcomment', {
+        params: {symbol: symbol}
+      }).then((res) => {
+        setComments(res.data);
+      });
+    });
+  };
+
   const addToWatchlist = (watchlist) => {
     Axios.post('http://localhost:3002/api/stock/addToWatchlist', {
       symbol: symbol,
@@ -202,7 +231,7 @@ const Stock = () => {
                   onChange={(e) => setContent(e.target.value)}
                   ></textarea>
         <br></br>
-        <button onClick={submitComment}>submit comment</button>
+        <button class="commentButton" onClick={submitComment}>submit comment</button>
 
         {comments &&
          comments.map((comment) =>
@@ -210,13 +239,20 @@ const Stock = () => {
              <h3>user: {comment['FirstName'].toLowerCase() + " " + comment['LastName'].toLowerCase()}</h3>
              <p>{comment['TimePosted']}</p>
              <p>{comment['Content'].toLowerCase()}</p>
+             <p>likes: {comment['LikeCount']}</p>
              {parseInt(localStorage.getItem('userId')) === comment['UserId'] &&
               <div class="update">
                 <textarea class="commentBox" name="content" cols="50" rows="4" maxlength="256" onChange={(e)=> {
                   setUpdateContent(e.target.value);
                 } }></textarea>
-                <button onClick={()=>updateComment(comment['CommentId'])}>update</button>
               </div>}
+             <div class="update">
+               <div>
+                 {parseInt(localStorage.getItem('userId')) === comment['UserId'] && <button onClick={()=>updateComment(comment['CommentId'])}>update</button>}
+                 {parseInt(localStorage.getItem('userId')) === comment['UserId'] && <button onClick={()=>deleteComment(comment['CommentId'])}>delete</button>}
+                 <button onClick={()=>likeComment(comment['CommentId'], comment['UserId'])}>like</button> 
+               </div>
+             </div>             
            </div>
          )}
       </div>
