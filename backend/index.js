@@ -358,6 +358,26 @@ app.post('/api/stock/search', (request, response) => {
   })
 });
 
+app.post('/api/watchlist/search', (request, response) => {
+  const listName = request.body.listName;
+  const sqlSearch = "SELECT * FROM Watchlist WHERE Title LIKE " + db.escape('%'+listName+'%');
+  db.query(sqlSearch, (err, result) => {
+    console.log(sqlSearch);
+    console.log(err);
+    response.send(result);
+  })
+});
+
+app.post('/api/community/search', (request, response) => {
+  const communityName = request.body.communityName;
+  const sqlSearch = "SELECT * FROM Community WHERE Name LIKE " + db.escape('%'+communityName+'%');
+  db.query(sqlSearch, (err, result) => {
+    console.log(sqlSearch);
+    console.log(err);
+    response.send(result);
+  })
+});
+
 app.post('/api/advanced1', (request, response) => {
   const bullishOrBearish = request.body.bullishOrBearish;
   const sqlAdvanced1 = "SELECT s.Sector, Count(v.Symbol) as NumVotes FROM  StockVote v Natural JOIN Stock s WHERE v.BullishOrBearish = ? GROUP by s.Sector Order by NumVotes DESC LIMIT 5;";
@@ -577,7 +597,7 @@ app.get('/api/othercommunities', (request, response) => {
 app.post('/api/joincommunity', (request, response) => {
   const communityId = request.body.communityId;
   const userId = request.body.userId;
-  const sql = "INSERT INTO CommunityMember VALUES (?, ?, 0, 0);";
+  const sql = "INSERT INTO CommunityMember VALUES (?, ?, 0);";
   db.query(sql, [userId, communityId], (err, result) => {
     console.log(err);
     response.send(result);
@@ -595,9 +615,9 @@ app.post('/api/leavecommunity', (request, response) => {
 });
 
 app.get('/api/topcontributors', (request, response) => {
-  const communityId = request.body.communityId;
-  const sql = "(SELECT u.FirstName, u.LastName, u.UserId, cm.Ranking FROM (CommunityMember cm JOIN User u ON cm.UserId = u.UserId) WHERE cm.CommunityId = ? AND cm.Ranking = 1) UNION (SELECT u.FirstName, u.LastName, u.UserId, cm.Ranking FROM (CommunityMember cm JOIN User u ON cm.UserId = u.UserId) WHERE cm.CommunityId = ? AND cm.Ranking = 2) UNION (SELECT u.FirstName, u.LastName, u.UserId, cm.Ranking FROM (CommunityMember cm JOIN User u ON cm.UserId = u.UserId) WHERE cm.CommunityId = ? AND cm.Ranking = 3);";
-  db.query(sql, [communityId, communityId, communityId], (err, result) => {
+  const communityid = request.query.communityid;
+  const sql = "SELECT u.FirstName, u.LastName, cm.Rating, u.UserId FROM (CommunityMember cm JOIN User u ON cm.UserId = u.UserId) WHERE cm.CommunityId = ? ORDER BY cm.Rating DESC LIMIT 3";
+  db.query(sql, [communityid], (err, result) => {
     console.log(err);
     response.send(result);
   })

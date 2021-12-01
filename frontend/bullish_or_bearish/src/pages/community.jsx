@@ -17,6 +17,8 @@ const Community = () => {
 
   const [updateContent, setUpdateContent] = useState("");
 
+  const currUserInCommunity = users.filter((user) => user.UserId == localStorage.getItem("userId")).length !== 0;
+
   const submitComment = (e) => {
     e.preventDefault();
     const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -72,6 +74,7 @@ const Community = () => {
     Axios.get('http://localhost:3002/api/topcontributors', {
       params: {communityid: communityid}
     }).then((res) => {
+      console.log(res.data);
       setTopContributors(res.data);
     });    
   }, []);
@@ -128,9 +131,9 @@ const Community = () => {
 
       <h1>top contributors:</h1>
       {topContributors &&
-       topContributors.map((user) =>
+       topContributors.map((user, idx) =>
          <div>
-           <p>{user.FirstName.toLowerCase() + " " + user.LastName.toLowerCase()}</p>
+           <p>{(idx + 1) + ". " + user.FirstName.toLowerCase() + " " + user.LastName.toLowerCase() + " | Rating: " + (user.Rating === null ? 0 : user.Rating)}</p>
          </div>
        )}
 
@@ -143,11 +146,14 @@ const Community = () => {
        )}
 
       <h2>comments</h2>
-      <textarea class="commentBox" name="content" cols="40" rows="5" maxlength="256"
-                onChange={(e) => setContent(e.target.value)}
-      ></textarea>
-      <br></br>
-      <button class="commentButton" onClick={submitComment}>submit comment</button>
+      {currUserInCommunity &&
+       <div>
+         <textarea class="commentBox" name="content" cols="40" rows="5" maxlength="256"
+                   onChange={(e) => setContent(e.target.value)}
+         ></textarea>
+         <br></br>
+         <button class="commentButton" onClick={submitComment}>submit comment</button>
+       </div>}
 
       {comments &&
        comments.map((comment) =>
