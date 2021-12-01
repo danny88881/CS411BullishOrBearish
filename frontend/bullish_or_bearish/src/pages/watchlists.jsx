@@ -19,20 +19,20 @@ function redir() {
   }
 }
 
-export default class WatchList extends Component {
-    constructor() {
-        super();
-        redir();
-        this.favorites();
-        this.others();
-        this.favorites = this.favorites.bind(this);
-        this.others = this.others.bind(this);
-        this.favorite = this.favorite.bind(this);
-        this.state={
-          favorites:[],
-          others:[]
-        }
+export default class Watchlists extends Component {
+  constructor() {
+    super();
+    redir();
+    this.favorites();
+    this.others();
+    this.favorites = this.favorites.bind(this);
+    this.others = this.others.bind(this);
+    this.favorite = this.favorite.bind(this);
+    this.state={
+      favorites:[],
+      others:[]
     }
+  }
 
   favorites() {
     const userId = localStorage.getItem('userId')
@@ -49,42 +49,60 @@ export default class WatchList extends Component {
   others() {
     const userId = localStorage.getItem('userId')
     axios.get('http://localhost:3002/api/watchlist', {params:{UserId: userId}}).then(
-        response => {
-            console.log(response)
-            if (response.data.length > 0) {
-              this.setState({others: response.data});
-            }
+      response => {
+        console.log(response)
+        if (response.data.length > 0) {
+          this.setState({others: response.data});
         }
+      }
     );
   }
 
   favorite(ListId) {
     const userId = localStorage.getItem('userId')
-    axios.get('http://localhost:3002/api/favoritewatchlist', {params:{UserId: userId, ListId: ListId}}).then(
-        this.favorites(),
-        this.others()
+    axios.post('http://localhost:3002/api/favoritewatchlist', {UserId: userId, ListId: ListId}).then(
+      this.favorites(),
+      this.others()
     );
   }
+
+  unfavorite(ListId) {
+    const userId = localStorage.getItem('userId')
+    axios.post('http://localhost:3002/api/unfavoritewatchlist', {UserId: userId, ListId: ListId}).then(
+      this.favorites(),
+      this.others()
+    );
+  }  
 
   render () {
     return (
       <div>
-        <h1>watchList favorites</h1>
+        <div class="createwatchlist" onClick={() => {document.location.href = "/CreateWatchlist"}}>
+          <h1>create watchlist</h1>
+        </div>
+        <hr></hr>
+        <h1>your watchList favorites</h1>
         {this.state.favorites &&
          this.state.favorites.map((favorite) =>
            <div>
-             <h1>Name: {favorite['Title']}</h1>
-             <p>Description: {favorite['Description'].toLowerCase()}</p>
-             <p>Creator: {favorite['CreatorId']}</p>
+             <div class="viewwatchlist" onClick={() => {document.location.href = "/WatchLists/" + favorite['ListId']}}>
+               <h1>Name: {favorite['Title']}</h1>
+               <p>Description: {favorite['Description'].toLowerCase()}</p>
+               <p>Creator: {favorite['CreatorId']}</p>
+             </div>
+             <button type="button" onClick={()=>{this.unfavorite(favorite['ListId'])}}>unfavorite this</button>  
            </div>
          )}
+        <hr></hr>
         <h1>discover new Watchlists</h1>
         {this.state.others &&
          this.state.others.map((other) =>
            <div>
-             <h1>Name: {other['Title']}</h1>
-             <p>Description: {other['Description'].toLowerCase()}</p>
-             <p>Creator: {other['CreatorId']}</p>
+             <div class="viewwatchlist" onClick={() => {document.location.href = "/WatchLists/" + other['ListId']}}>
+               <h1>Name: {other['Title']}</h1>
+               <p>Description: {other['Description'].toLowerCase()}</p>
+               <p>Creator: {other['CreatorId']}</p>
+             </div>
              <button type="button" onClick={()=>{this.favorite(other['ListId'])}}>favorite this</button>
            </div>
          )}
