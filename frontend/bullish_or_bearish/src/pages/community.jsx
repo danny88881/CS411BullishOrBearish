@@ -13,6 +13,8 @@ const Community = () => {
   const [content, setContent] = useState("");
   const [comments, setComments] = useState([]);
 
+  const [topContributors, setTopContributors] = useState([]);
+
   const [updateContent, setUpdateContent] = useState("");
 
   const submitComment = (e) => {
@@ -66,6 +68,12 @@ const Community = () => {
     }).then((res) => {
       setComments(res.data);
     });
+
+    Axios.get('http://localhost:3002/api/topcontributors', {
+      params: {communityid: communityid}
+    }).then((res) => {
+      setTopContributors(res.data);
+    });    
   }, []);
 
   const updateComment = (updateId) => {
@@ -77,12 +85,27 @@ const Community = () => {
         Axios.get('http://localhost:3002/api/communitycomment', {
           params: {communityid: communityid}
         }).then((res) => {
-          console.log(res.data);
           setComments(res.data);
         });
       });
     }
   };
+
+  const deleteComment = (deleteId) => {
+    Axios.post('http://localhost:3002/api/deletecommunitycomment', {
+      commentId: deleteId
+    }).then(()=> {
+      Axios.post('http://localhost:3002/api/deletecommunitycomment', {
+        commentId: deleteId
+      }).then(() => {
+        Axios.get('http://localhost:3002/api/communitycomment', {
+          params: {communityid: communityid}
+        }).then((res) => {
+          setComments(res.data);
+        });
+      });
+    });
+  };  
 
   const likeComment = (commentId, userId) => {
     Axios.post('http://localhost:3002/api/likecomment', {
@@ -92,7 +115,6 @@ const Community = () => {
       Axios.get('http://localhost:3002/api/communitycomment', {
         params: {communityid: communityid}
       }).then((res) => {
-        console.log(res.data);
         setComments(res.data);
       });
     });
@@ -104,7 +126,15 @@ const Community = () => {
       <p>desription: {description}</p>
       <br></br>
 
-      <h1>Users in this community:</h1>
+      <h1>Top Contributors:</h1>
+      {topContributors &&
+       topContributors.map((user) =>
+         <div>
+           <p>{user.FirstName.toLowerCase() + " " + user.LastName.toLowerCase()}</p>
+         </div>
+       )}
+
+      <h1>All users in this community:</h1>
       {users &&
        users.map((user) =>
          <div>
@@ -132,6 +162,7 @@ const Community = () => {
                 setUpdateContent(e.target.value);
               } }></textarea>
               <button onClick={()=>updateComment(comment['CommentId'])}>update</button>
+              <button onClick={()=>deleteComment(comment['CommentId'])}>delete</button>
             </div>}
            <button onClick={()=>likeComment(comment['CommentId'], comment['UserId'])}>like</button>           
          </div>
