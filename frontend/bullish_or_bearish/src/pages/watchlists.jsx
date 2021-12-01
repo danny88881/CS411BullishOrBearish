@@ -60,7 +60,7 @@ export default class WatchList extends Component {
 
   favorite(ListId) {
     const userId = localStorage.getItem('userId')
-    axios.post('http://localhost:3002/api/favoritewatchlist', {UserId: userId, ListId: ListId}).then(
+    axios.get('http://localhost:3002/api/favoritewatchlist', {params:{UserId: userId, ListId: ListId}}).then(
         this.favorites(),
         this.others()
     );
@@ -69,7 +69,7 @@ export default class WatchList extends Component {
   render () {
     return (
       <div>
-        <h1>WatchList Favorites</h1>
+        <h1>watchList favorites</h1>
         {this.state.favorites &&
          this.state.favorites.map((favorite) =>
            <div>
@@ -78,14 +78,14 @@ export default class WatchList extends Component {
              <p>Creator: {favorite['CreatorId']}</p>
            </div>
          )}
-        <h1>New WatchLists</h1>
+        <h1>discover new Watchlists</h1>
         {this.state.others &&
          this.state.others.map((other) =>
            <div>
              <h1>Name: {other['Title']}</h1>
              <p>Description: {other['Description'].toLowerCase()}</p>
              <p>Creator: {other['CreatorId']}</p>
-             <button type="button" onClick={this.favorite(other['ListId'])}>favorite this</button>
+             <button type="button" onClick={()=>{this.favorite(other['ListId'])}}>favorite this</button>
            </div>
          )}
       </div>

@@ -197,9 +197,10 @@ app.post('/api/register', (require, response) => {
   })
 })
 
-app.post('/api/watchlist', (request, response) => {
-  const sql = "SELECT * from Watchlist";
-  db.query(sql, (err, result) => {
+app.get('/api/watchlist', (request, response) => {
+  const userId = request.query.UserId;
+  const sql = "SELECT * from Watchlist WHERE ListId NOT IN (SELECT ListId FROM Watchlist NATURAL JOIN WatchlistFavorite w WHERE w.UserId = ?)";
+  db.query(sql, [userId], (err, result) => {
     console.log(err);
     response.send(result);
   })
@@ -207,8 +208,8 @@ app.post('/api/watchlist', (request, response) => {
 
 app.get('/api/favoritewatchlist', (request, response) => {
   const sql = "INSERT into WatchlistFavorite VALUES (?, ?)";
-  const userId = request.body.UserId;
-  const listId = request.body.ListId;
+  const userId = request.query.UserId;
+  const listId = request.query.ListId;
   db.query(sql, [userId, listId], (err, result) => {
     console.log(err);
     response.send(result);
@@ -216,8 +217,8 @@ app.get('/api/favoritewatchlist', (request, response) => {
 });
 
 app.get('/api/getFavoriteLists', (request, response) => {
-  const userId = request.body.UserId;
-  const sql = "SELECT * from Watchlist natural join WatchlistFavorite w WHERE w.UserId = ?";
+  const userId = request.query.UserId;
+  const sql = "SELECT * FROM Watchlist NATURAL JOIN WatchlistFavorite w WHERE w.UserId = ?";
   db.query(sql, [userId], (err, result) => {
     console.log(err);
     response.send(result);
