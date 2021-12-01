@@ -161,12 +161,14 @@ const Community = () => {
               <textarea class="commentBox" name="content" cols="50" rows="4" maxlength="256" onChange={(e)=> {
                 setUpdateContent(e.target.value);
               } }></textarea>
-              <div>
-              <button onClick={()=>updateComment(comment['CommentId'])}>update</button>
-              <button onClick={()=>deleteComment(comment['CommentId'])}>delete</button>
-              <button onClick={()=>likeComment(comment['CommentId'], comment['UserId'])}>like</button> 
-              </div>
             </div>}
+           <div class="update">
+             <div>
+             {parseInt(localStorage.getItem('userId')) === comment['UserId'] && <button onClick={()=>updateComment(comment['CommentId'])}>update</button>}
+             {parseInt(localStorage.getItem('userId')) === comment['UserId'] && <button onClick={()=>deleteComment(comment['CommentId'])}>delete</button>}
+             <button onClick={()=>likeComment(comment['CommentId'], comment['UserId'])}>like</button> 
+             </div>
+           </div>
          </div>
        )}
     </div>

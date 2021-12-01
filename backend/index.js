@@ -106,6 +106,16 @@ app.post('/api/stockcomment', (request, response) => {
   });
 });
 
+app.post('/api/watchlistcomment', (request, response) => {
+  const listId = request.body.listId;
+  const commentId = request.body.commentId;
+  const sqlInsert = "INSERT into WatchlistComment VALUES (?, ?);";
+  db.query(sqlInsert, [listId, commentId], (err, result) => {
+    console.log(err);
+    response.send(result);
+  });
+});
+
 app.get('/api/getManagedWatchlists', (request, response) => {
   const userId = request.query.userId;
   const symbol = request.query.symbol;
@@ -186,11 +196,55 @@ app.post('/api/updatecommunitycomment', (request, response) => {
   })
 })
 
+app.post('/api/updatewatchlistcomment', (request, response) => {
+  const commentId = request.body.commentId;
+  const newContent = request.body.newContent;
+
+  const sqlUpdate = "UPDATE Comment SET Content = ? WHERE CommentId = ?";
+  db.query(sqlUpdate, [newContent, commentId], (err, result) => {
+    console.log(err);
+    response.send(err);
+  })
+})
+
 app.post('/api/deletecommunitycomment', (request, response) => {
   const commentId = request.body.commentId;
   console.log(commentId);
 
   const sqlUpdate = "DELETE FROM CommunityComment WHERE CommentId = ?;";
+  db.query(sqlUpdate, [commentId], (err, result) => {
+    console.log(err);
+    response.send(err);
+  })
+})
+
+app.post('/api/deletewatchlistcomment', (request, response) => {
+  const commentId = request.body.commentId;
+  console.log(commentId);
+
+  const sqlUpdate = "DELETE FROM WatchlistComment WHERE CommentId = ?;";
+  db.query(sqlUpdate, [commentId], (err, result) => {
+    console.log(err);
+    response.send(err);
+  })
+})
+
+app.post('/api/deletestockcomment', (request, response) => {
+  const commentId = request.body.commentId;
+  console.log(commentId);
+
+  const sqlUpdate = "DELETE FROM StockComment WHERE CommentId = ?;";
+  db.query(sqlUpdate, [commentId], (err, result) => {
+    console.log(err);
+    response.send(err);
+  })
+})
+
+app.post('/api/deletewatchlistcomment', (request, response) => {
+  const commentId = request.body.commentId;
+  console.log(commentId);
+
+  const sqlUpdate = "DELETE FROM WatchlistComment WHERE CommentId = ?;";
   db.query(sqlUpdate, [commentId], (err, result) => {
     console.log(err);
     response.send(err);
@@ -239,8 +293,18 @@ app.post('/api/likecomment', (request, response) => {
 
 app.get('/api/stockcomment', (request, response) => {
   const symbol = request.query.symbol;
-  const sqlSearch = "SELECT FirstName, LastName, UserId, Content, TimePosted, CommentId from Comment c NATURAL JOIN StockComment NATURAL JOIN User WHERE Symbol = ? ORDER BY c.TimePosted DESC";
+  const sqlSearch = "SELECT FirstName, LastName, UserId, Content, TimePosted, CommentId, LikeCount from Comment c NATURAL JOIN StockComment NATURAL JOIN User WHERE Symbol = ? ORDER BY c.TimePosted DESC";
   db.query(sqlSearch, [symbol], (err, result) => {
+    console.log(err);
+    response.send(result);
+  });
+});
+
+app.get('/api/watchlistcomment', (request, response) => {
+  const listId = request.query.listId;
+  console.log("id", listId);
+  const sqlSearch = "SELECT FirstName, LastName, UserId, Content, TimePosted, CommentId, LikeCount from Comment c NATURAL JOIN WatchlistComment NATURAL JOIN User WHERE ListId = ? ORDER BY c.TimePosted DESC";
+  db.query(sqlSearch, [listId], (err, result) => {
     console.log(err);
     response.send(result);
   });
