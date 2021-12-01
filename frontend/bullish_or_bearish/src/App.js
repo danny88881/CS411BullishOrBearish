@@ -21,6 +21,8 @@ import Search from './pages/search';
 import WatchLists from './pages/watchlists';
 import WatchList from './pages/watchlist';
 import WatchListCreate from './pages/watchlistcreate';
+import Communities from './pages/communities'
+import Community from './pages/community';
 
 class App extends Component {
   render() {
@@ -35,6 +37,8 @@ class App extends Component {
       <Route path="/Watchlists" element={<WatchLists/>} />
       <Route path="/CreateWatchlist" element={<WatchListCreate/>} />
       <Route path="/Watchlists/:listid" element={<WatchList/>} />
+      <Route path="/Communities" element={<Communities/>} />
+      <Route path="/Communities/:communityid" element={<Community/>} />      
       <Route path="/Search" element={<Search/>} />
       <Route path="/Register" element={<Registration/>} />
       <Route path="/Login" element={<Login/>} />

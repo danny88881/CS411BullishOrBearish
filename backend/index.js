@@ -287,6 +287,75 @@ app.post('/api/WatchlistCreate', (request, response) => {
   })
 });
 
+app.get('/api/community', (request, response) => {
+  const communityid = request.query.communityid
+  const sql = "SELECT * FROM Community where CommunityId = ?";
+  db.query(sql, [communityid], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
+app.get('/api/communityusers', (request, response) => {
+  const communityid = request.query.communityid;
+  const sql = "SELECT u.FirstName, u.LastName, u.UserId FROM (CommunityMember cm JOIN User u ON cm.UserId = u.UserId) WHERE cm.CommunityId = ?;";
+  db.query(sql, [communityid], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
+
+app.post('/api/communitycreate', (request, response) => {
+  console.log(request.query);
+  const creatorId = request.body.creatorid;
+  const title = request.body.name;
+  const desc = request.body.desc;
+  const sql = "INSERT INTO Community (CreatorId, Name, Description) VALUES (?, ?, ?);";
+  db.query(sql, [creatorId, name, desc], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
+app.get('/api/usercommunities', (request, response) => {
+  const userId = request.query.userId;
+  const sql = "SELECT * FROM Community NATURAL JOIN CommunityMember where CommunityMember.UserId = ?;";
+  db.query(sql, [userId], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })  
+});
+
+app.get('/api/othercommunities', (request, response) => {
+  const userId = request.query.userId;
+  const sql = "SELECT * FROM Community where CommunityId NOT IN (SELECT Community.CommunityId from Community NATURAL JOIN CommunityMember where CommunityMember.UserId = ?);";
+  db.query(sql, [userId], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })  
+});
+
+app.post('/api/joincommunity', (request, response) => {
+  const communityId = request.body.communityId;
+  const userId = request.body.userId;
+  const sql = "INSERT INTO CommunityMember VALUES (?, ?);";
+  db.query(sql, [userId, communityId], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
+app.post('/api/leavecommunity', (request, response) => {
+  const communityId = request.body.communityId;
+  const userId = request.body.userId;
+  const sql = "DELETE FROM CommunityMember WHERE UserId = ? AND CommunityId = ?;";
+  db.query(sql, [userId, communityId], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
 app.listen(3002, () => {
   console.log("Running on port 3002")
 });

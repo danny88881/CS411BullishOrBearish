@@ -88,7 +88,6 @@ export default class Watchlists extends Component {
              <div class="viewwatchlist" onClick={() => {document.location.href = "/WatchLists/" + favorite['ListId']}}>
                <h1>Name: {favorite['Title']}</h1>
                <p>Description: {favorite['Description'].toLowerCase()}</p>
-               <p>Creator: {favorite['CreatorId']}</p>
              </div>
              <button type="button" onClick={()=>{this.unfavorite(favorite['ListId'])}}>unfavorite this</button>  
            </div>
@@ -101,7 +100,6 @@ export default class Watchlists extends Component {
              <div class="viewwatchlist" onClick={() => {document.location.href = "/WatchLists/" + other['ListId']}}>
                <h1>Name: {other['Title']}</h1>
                <p>Description: {other['Description'].toLowerCase()}</p>
-               <p>Creator: {other['CreatorId']}</p>
              </div>
              <button type="button" onClick={()=>{this.favorite(other['ListId'])}}>favorite this</button>
            </div>
