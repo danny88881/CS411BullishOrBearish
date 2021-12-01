@@ -12,6 +12,13 @@ var db = mysql.createConnection({
   database: process.env.DB_DATABASE,
   password: process.env.DB_PASS
 })
+db.query('SET TRANSACTION ISOLATION LEVEL READ COMMITTED;', (err) => {
+  if (err) {
+    return db.rollback(() => {
+      throw err;
+    });
+  }
+});
 
 app.use(cors());
 app.use(bodyParser.urlencoded({extended:true}));
@@ -121,7 +128,7 @@ app.post('/api/communitycomment', (request, response) => {
 
 app.get('/api/communitycomment', (request, response) => {
   const communityid = request.query.communityid;
-  const sqlInsert = "SELECT FirstName, LastName, UserId, Content, TimePosted, CommentId from Comment c NATURAL JOIN CommunityComment NATURAL JOIN User WHERE CommunityId = ? ORDER BY c.TimePosted DESC";
+  const sqlInsert = "SELECT FirstName, LastName, UserId, Content, TimePosted, CommentId, LikeCount from Comment c NATURAL JOIN CommunityComment NATURAL JOIN User WHERE CommunityId = ? ORDER BY c.TimePosted DESC";
   db.query(sqlInsert, [communityid], (err, result) => {
     console.log(err);
     response.send(result);
@@ -138,6 +145,51 @@ app.post('/api/updatecommunitycomment', (request, response) => {
     response.send(err);
   })
 })
+
+app.post('/api/likecomment', (request, response) => {
+  const transaction = (commentId, userId) => {
+    db.beginTransaction((err) => {
+      if (err) throw err;
+      db.query('UPDATE Comment SET LikeCount = LikeCount + 1 WHERE CommentId = ?', [commentId], (error, results, fields) => {
+        if (error) {
+          return db.rollback(() => {
+            throw error;
+          });
+        }
+
+        db.query('SELECT COUNT(*) FROM Comment c NATURAL JOIN CommunityComment cc WHERE c.CommentId = ?', [commentId], (error, results, fields) => {
+          // If this comment does not correspond to a community comment, we cannot continue the transaction
+          if (results['COUNT(*)'] === 0) {
+            return db.rollback(() => {
+              throw error;
+            });
+          }
+          
+          db.query('UPDATE CommunityMember SET Rating = Rating + 1 WHERE UserID = ? AND CommunityId IN (SELECT cc.CommunityId FROM Comment c NATURAL JOIN CommunityComment cc WHERE c.CommentId = ?)', [userId, commentId], (error, results, fields) => {
+            if (error) {
+              return db.rollback(() => {
+                throw error;
+              });
+            }
+
+            db.commit(function(err) {
+              if (err) {
+                return db.rollback(() => {
+                  throw err;
+                });
+              }
+              console.log('success!');
+            });            
+          });
+        });
+      });
+    });
+  }
+
+  const commentId = request.body.commentId;
+  const userId = request.body.userId;
+  transaction(commentId, userId);
+});
 
 app.get('/api/stockcomment', (request, response) => {
   const symbol = request.query.symbol;

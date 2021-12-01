@@ -27,7 +27,7 @@ const Community = () => {
       date: date,
       likeCount: 0
     }).then(() => {
-      // get the id to which the StockComment will be associated
+      // get the id to which the CommunityComment will be associated
       Axios.get('http://localhost:3002/api/mostrecentcomment').then((res) => {
         // insert into the CommunityComment table
         Axios.post('http://localhost:3002/api/communitycomment', {
@@ -68,7 +68,6 @@ const Community = () => {
     });
   }, []);
 
-
   const updateComment = (updateId) => {
     if (updateContent.length !== 0) {
       Axios.post('http://localhost:3002/api/updatecommunitycomment', {
@@ -84,6 +83,20 @@ const Community = () => {
       });
     }
   };
+
+  const likeComment = (commentId, userId) => {
+    Axios.post('http://localhost:3002/api/likecomment', {
+      commentId: commentId,
+      userId: userId,
+    }).then(()=> {
+      Axios.get('http://localhost:3002/api/communitycomment', {
+        params: {communityid: communityid}
+      }).then((res) => {
+        console.log(res.data);
+        setComments(res.data);
+      });
+    });
+  };  
 
   return (
     <div>
@@ -112,6 +125,7 @@ const Community = () => {
            <h3>user: {comment['FirstName'].toLowerCase() + " " + comment['LastName'].toLowerCase()}</h3>
            <p>{comment['TimePosted']}</p>
            <p>{comment['Content'].toLowerCase()}</p>
+           <p>likes: {comment['LikeCount']}</p>
            {parseInt(localStorage.getItem('userId')) === comment['UserId'] &&
             <div class="update">
               <textarea class="commentBox" name="content" cols="50" rows="4" maxlength="256" onChange={(e)=> {
@@ -119,6 +133,7 @@ const Community = () => {
               } }></textarea>
               <button onClick={()=>updateComment(comment['CommentId'])}>update</button>
             </div>}
+           <button onClick={()=>likeComment(comment['CommentId'], comment['UserId'])}>like</button>           
          </div>
        )}
     </div>
