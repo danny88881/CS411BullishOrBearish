@@ -110,7 +110,7 @@ app.post('/api/watchlistcomment', (request, response) => {
 });
 
 app.post('/api/communitycomment', (request, response) => {
-  const communityid = request.body.symbol;
+  const communityid = request.body.communityid;
   const commentId = request.body.commentId;
   const sqlInsert = "INSERT INTO CommunityComment VALUES (?, ?);";
   db.query(sqlInsert, [communityid, commentId], (err, result) => {
@@ -118,6 +118,26 @@ app.post('/api/communitycomment', (request, response) => {
     response.send(result);
   });
 });
+
+app.get('/api/communitycomment', (request, response) => {
+  const communityid = request.query.communityid;
+  const sqlInsert = "SELECT FirstName, LastName, UserId, Content, TimePosted, CommentId from Comment c NATURAL JOIN CommunityComment NATURAL JOIN User WHERE CommunityId = ? ORDER BY c.TimePosted DESC";
+  db.query(sqlInsert, [communityid], (err, result) => {
+    console.log(err);
+    response.send(result);
+  });
+});
+
+app.post('/api/updatecommunitycomment', (request, response) => {
+  const commentId = request.body.commentId;
+  const newContent = request.body.newContent;
+
+  const sqlUpdate = "UPDATE Comment SET Content = ? WHERE CommentId = ?";
+  db.query(sqlUpdate, [newContent, commentId], (err, result) => {
+    console.log(err);
+    response.send(err);
+  })
+})
 
 app.get('/api/stockcomment', (request, response) => {
   const symbol = request.query.symbol;
@@ -359,7 +379,7 @@ app.get('/api/othercommunities', (request, response) => {
 app.post('/api/joincommunity', (request, response) => {
   const communityId = request.body.communityId;
   const userId = request.body.userId;
-  const sql = "INSERT INTO CommunityMember VALUES (?, ?);";
+  const sql = "INSERT INTO CommunityMember VALUES (?, ?, 0);";
   db.query(sql, [userId, communityId], (err, result) => {
     console.log(err);
     response.send(result);
