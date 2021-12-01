@@ -237,6 +237,24 @@ app.get('/api/getFavoriteLists', (request, response) => {
   })
 });
 
+app.get('/api/stock/bullish', (request, response) => {
+  const symbol = request.query.Symbol;
+  const sql = "SELECT COUNT(*) FROM StockVote WHERE Symbol = ? AND BullishOrBearish = 1;";
+  db.query(sql, [symbol], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
+app.get('/api/stock/bearish', (request, response) => {
+  const symbol = request.query.Symbol;
+  const sql = "SELECT COUNT(*) FROM StockVote WHERE Symbol = ? AND BullishOrBearish = 0;";
+  db.query(sql, [symbol], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
 app.get('/api/getWatchlistStocks', (request, response) => {
   const listId = request.query.listid;
   const sql = "SELECT * FROM Stock s NATURAL JOIN WatchlistStock ws join Watchlist w on (ws.ListId = w.ListId) where w.ListId = ?";
