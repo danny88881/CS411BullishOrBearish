@@ -71,25 +71,13 @@ export default class Communities extends Component {
     });
   }
 
-  // useEffect(() => {
-  //   axios.get('http://localhost:3002/api/usercommunities', {
-  //     params: {userId: localStorage.getItem("userId")}
-  //   }).then((res)=> {
-  //     console.log(res);
-  //     setUserCommunities(res.data);
-  //   });
-
-  //   axios.get('http://localhost:3002/api/othercommunities', {
-  //     params: {userId: localStorage.getItem("userId")}
-  //   }).then((res)=> {
-  //     console.log(res);
-  //     setOtherCommunities(res.data);
-  //   });
-  // }, []);
-
   render() {
     return (
       <div>
+        <div class="createwatchlist" onClick={() => {document.location.href = "/CreateCommunity"}}>
+          <h1>create community</h1>
+        </div>
+        <hr></hr>
         <h1>your communities</h1>
         {this.state.users &&
          this.state.users.map((community) =>

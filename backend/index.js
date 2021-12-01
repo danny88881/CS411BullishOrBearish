@@ -99,6 +99,26 @@ app.post('/api/stockcomment', (request, response) => {
   });
 });
 
+app.post('/api/watchlistcomment', (request, response) => {
+  const listid = request.body.listid
+  const commentId = request.body.commentId;
+  const sqlInsert = "INSERT INTO WatchlistComment VALUES (?, ?);";
+  db.query(sqlInsert, [listid, commentId], (err, result) => {
+    console.log(err);
+    response.send(result);
+  });
+});
+
+app.post('/api/communitycomment', (request, response) => {
+  const communityid = request.body.symbol;
+  const commentId = request.body.commentId;
+  const sqlInsert = "INSERT INTO CommunityComment VALUES (?, ?);";
+  db.query(sqlInsert, [communityid, commentId], (err, result) => {
+    console.log(err);
+    response.send(result);
+  });
+});
+
 app.get('/api/stockcomment', (request, response) => {
   const symbol = request.query.symbol;
   const sqlSearch = "SELECT FirstName, LastName, UserId, Content, TimePosted, CommentId from Comment c NATURAL JOIN StockComment NATURAL JOIN User WHERE Symbol = ? ORDER BY c.TimePosted DESC";
@@ -309,7 +329,7 @@ app.get('/api/communityusers', (request, response) => {
 app.post('/api/communitycreate', (request, response) => {
   console.log(request.query);
   const creatorId = request.body.creatorid;
-  const title = request.body.name;
+  const name = request.body.name;
   const desc = request.body.desc;
   const sql = "INSERT INTO Community (CreatorId, Name, Description) VALUES (?, ?, ?);";
   db.query(sql, [creatorId, name, desc], (err, result) => {
