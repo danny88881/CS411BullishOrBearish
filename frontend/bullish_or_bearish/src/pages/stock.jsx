@@ -15,6 +15,8 @@ const Stock = () => {
   const [comments, setComments] = useState([]);
   const [watchlists, setWatchlists] = useState([]);
   const [watchlistsIn, setWatchlistsIn] = useState([]);
+  const [addWL, setAddWL] = useState(0);
+  const [removeWL, setRemoveWL] = useState(0);
 
   const [updateContent, setUpdateContent] = useState("");
 
@@ -63,6 +65,34 @@ const Stock = () => {
       });
     }
   };
+
+  const addToWatchlist = (watchlist) => {
+    Axios.post('http://localhost:3002/api/stock/addToWatchlist', {
+      symbol: symbol,
+      watchlist: watchlist
+    }).then((res)=> {
+      setAddWL(0)
+    });
+  }
+
+  const removeFromWatchlist = (watchlist) => {
+    Axios.post('http://localhost:3002/api/stock/removeFromWatchlist', {
+      symbol: symbol,
+      watchlist: watchlist
+    }).then((res)=> {
+      setRemoveWL(0)
+    });
+  }
+
+  const onChangeAWL = (event) => {
+    var newValue = event.nativeEvent.target.value;
+    setAddWL(newValue);
+  }
+
+  const onChangeRWL = (event) => {
+    var newValue = event.nativeEvent.target.value;
+    setRemoveWL(newValue);
+  }
 
   useEffect(() => {
     Axios.post('http://localhost:3002/api/stock/search', {
@@ -117,12 +147,9 @@ const Stock = () => {
       userId: userId,
       symbol: symbol
     }}).then((res)=> {
-      if (res.data.length === 0) {
-      } else {
-        setWatchlists(res.data);
-      }
+      setWatchlists(res.data);
     });
-  }, []);
+  }, [addWL, removeWL]);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -130,12 +157,9 @@ const Stock = () => {
       userId: userId,
       symbol: symbol
     }}).then((res)=> {
-      if (res.data.length === 0) {
-      } else {
-        setWatchlistsIn(res.data);
-      }
+      setWatchlistsIn(res.data);
     });
-  }, []);
+  }, [addWL, removeWL]);
 
   if (name === null) {
     return <p>not found</p>;
@@ -148,7 +172,8 @@ const Stock = () => {
         <br></br>
 
         <div class="addToWatchlist" style={{display: watchlists.length>0 ? "block":"none"}}>
-        <select name="watchlist" id="watchlist">
+        <select name="watchlist" id="watchlist" onChange={onChangeAWL}>
+          <option value="">none</option>
           {watchlists &&
           watchlists.map((watchlist) =>
             <option value={watchlist["ListId"]}>
@@ -156,11 +181,12 @@ const Stock = () => {
             </option>
          )}
         </select>
-        <button>add</button>
+        <button onClick={()=>{addToWatchlist(addWL)}}>add</button>
         </div>
 
         <div class="addToWatchlist" style={{display: watchlistsIn.length>0 ? "block":"none"}}>
-        <select name="watchlist" id="watchlist">
+        <select name="watchlist" id="watchlistIn" onChange={onChangeRWL}>
+          <option value="">none</option>
           {watchlistsIn &&
           watchlistsIn.map((watchlist) =>
             <option value={watchlist["ListId"]}>
@@ -168,7 +194,7 @@ const Stock = () => {
             </option>
          )}
         </select>
-        <button>remove</button>
+        <button onClick={()=>{removeFromWatchlist(removeWL)}}>remove</button>
         </div>
 
         <h2>comments</h2>

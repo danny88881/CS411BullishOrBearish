@@ -45,7 +45,7 @@ export default class CommunityCreate extends Component {
     render () {
       return (
         <div>
-          <form class="create" onSubmit={this.handleSubmit}>
+          <form class="register" onSubmit={this.handleSubmit}>
           <h1>create community</h1>
           <p>--------------------</p>
           <input type="text" name="name" placeholder="name" value={this.state.name} onChange={this.handleChange} required/>

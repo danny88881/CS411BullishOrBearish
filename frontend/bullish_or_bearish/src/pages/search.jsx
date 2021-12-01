@@ -22,40 +22,22 @@ const Search = () => {
   };
 
   return (
-    <div>
+    <div class="menu">
       <h1>Search Stocks</h1>
       <div className="form">
-        <label>search:</label>
-        <input type="text" name="search" onChange={(e)=> {setStockSymbol(e.target.value.toUpperCase());}}></input>
-        <button onClick={searchStock}>submit</button>
+        <input type="text" name="search" style={{fontSize:"24px", color:"black", height:"40px"}} onChange={(e)=> {setStockSymbol(e.target.value.toUpperCase());}}></input>
+        <button style={{fontSize:"16px", height:"40px"}} onClick={searchStock}>submit</button>
       </div>
 
       { stocks.length > 0 ?
         <div>
-          <h3>results:</h3>
           <table>
             {stocks.map((stock) =>
-              <div>
-                <tr>
-                  <th>symbol</th>
-                  <td>{stock['Symbol'].toLowerCase()}</td>
-                </tr>
-                <tr>
-                  <th>name</th>
-                  <td>{stock['Name'].toLowerCase()}</td>
-                </tr>
-                <tr>
-                  <th>sector</th>
-                  <td>{stock['Sector'].toLowerCase()}</td>
-                </tr>
-                <tr>
-                  <th>industry</th>
-                  <td>{stock['Industry'].toLowerCase()}</td>
-                </tr>
-                <tr>
-                  <th><button onClick={() => viewStock(stock['Symbol'])}>view stock</button></th>
-                </tr>
-                <br></br>
+              <div onClick={() => viewStock(stock['Symbol'])} class="stockdisplay">
+                <h2>{stock['Symbol'].toLowerCase()}</h2>
+                <p>{stock['Name'].toLowerCase()}</p>
+                <p>{stock['Sector'].toLowerCase()} : {stock['Industry'].toLowerCase()}</p>
+                <p>--------------------</p>
               </div>
             )}
           </table>

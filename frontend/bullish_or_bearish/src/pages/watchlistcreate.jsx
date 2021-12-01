@@ -41,7 +41,7 @@ export default class WatchListCreate extends Component {
   
     render () {
       return (
-        <div>
+        <div class="register">
           <form class="create" onSubmit={this.handleSubmit}>
           <h1>create watchlist</h1>
           <p>--------------------</p>

@@ -73,20 +73,20 @@ export default class Communities extends Component {
 
   render() {
     return (
-      <div>
-        <div class="createwatchlist" onClick={() => {document.location.href = "/CreateCommunity"}}>
-          <h1>create community</h1>
-        </div>
+      <div class="menu">
+        <button class="createwatchlist" onClick={() => {document.location.href = "/CreateCommunity"}}>
+          create community
+        </button>
         <hr></hr>
         <h1>your communities</h1>
         {this.state.users &&
          this.state.users.map((community) =>
            <div>
-             <div onClick={() => {document.location.href = "/Communities/" + community['CommunityId']}}>
+             <div style={{cursor:"pointer"}} onClick={() => {document.location.href = "/Communities/" + community['CommunityId']}}>
                <h1>Name: {community['Name']}</h1>
                <p>Description: {community['Description'].toLowerCase()}</p>
              </div>
-             <button type="button" onClick={() =>{this.leave(community['CommunityId'])}}>leave</button>    
+             <button style={{fontSize:"16px"}} type="button" onClick={() =>{this.leave(community['CommunityId'])}}>leave</button>    
            </div>       
          )}
         <hr></hr>
@@ -94,11 +94,11 @@ export default class Communities extends Component {
         {this.state.others &&
          this.state.others.map((community) =>
            <div>
-             <div onClick={() => {document.location.href = "/Communities/" + community['CommunityId']}}>
+             <div style={{cursor:"pointer"}} onClick={() => {document.location.href = "/Communities/" + community['CommunityId']}}>
                <h1>Name: {community['Name']}</h1>
                <p>Description: {community['Description'].toLowerCase()}</p>
              </div>
-             <button type="button" onClick={() =>{this.join(community['CommunityId'])}}>join</button>    
+             <button style={{fontSize:"16px"}} type="button" onClick={() =>{this.join(community['CommunityId'])}}>join</button>    
            </div>       
          )}
       </div>

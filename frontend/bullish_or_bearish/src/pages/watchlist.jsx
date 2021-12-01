@@ -5,6 +5,8 @@ import Axios from 'axios';
 const WatchList = () => {
   let { listid } = useParams();
 
+  const [score, setScore] = useState(0);
+
   const [stocks, setStocks] = useState([]);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -16,6 +18,13 @@ const WatchList = () => {
       }).then((res)=> {
           setStocks(res.data);
     });
+
+  Axios.get('http://localhost:3002/api/getWatchlistScore', {
+      params: {listid: listid}
+    }).then((res)=> {
+      console.log(res.data);
+      setScore(res.data[0].Score);
+  });
   
   Axios.get('http://localhost:3002/api/getWatchlistInfo', {
         params: {listid: listid}
@@ -29,10 +38,10 @@ const WatchList = () => {
   
 
     return (
-      <div>
-        <h1>title: {title}</h1>
-        <p>creator: {creator}</p>
-        <p>desription: {description}</p>
+      <div class="menu">
+        <h1 style={{display:"inline", color:score>0?"#adff2f":"#ff0000", fontSize:"64px"}}>{title}:{score}</h1>
+        <p>{creator}</p>
+        <p>{description}</p>
         <br></br>
 
         {stocks &&

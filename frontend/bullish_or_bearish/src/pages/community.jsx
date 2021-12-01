@@ -121,12 +121,12 @@ const Community = () => {
   };  
 
   return (
-    <div>
-      <h1>name: {name}</h1>
-      <p>desription: {description}</p>
+    <div class="menu">
+      <h1>{name}</h1>
+      <p>{description}</p>
       <br></br>
 
-      <h1>Top Contributors:</h1>
+      <h1>top contributors:</h1>
       {topContributors &&
        topContributors.map((user) =>
          <div>
@@ -134,7 +134,7 @@ const Community = () => {
          </div>
        )}
 
-      <h1>All users in this community:</h1>
+      <h1>users:</h1>
       {users &&
        users.map((user) =>
          <div>
@@ -147,7 +147,7 @@ const Community = () => {
                 onChange={(e) => setContent(e.target.value)}
       ></textarea>
       <br></br>
-      <button onClick={submitComment}>submit comment</button>
+      <button class="commentButton" onClick={submitComment}>submit comment</button>
 
       {comments &&
        comments.map((comment) =>
@@ -161,10 +161,12 @@ const Community = () => {
               <textarea class="commentBox" name="content" cols="50" rows="4" maxlength="256" onChange={(e)=> {
                 setUpdateContent(e.target.value);
               } }></textarea>
+              <div>
               <button onClick={()=>updateComment(comment['CommentId'])}>update</button>
               <button onClick={()=>deleteComment(comment['CommentId'])}>delete</button>
+              <button onClick={()=>likeComment(comment['CommentId'], comment['UserId'])}>like</button> 
+              </div>
             </div>}
-           <button onClick={()=>likeComment(comment['CommentId'], comment['UserId'])}>like</button>           
          </div>
        )}
     </div>
