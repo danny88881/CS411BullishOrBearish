@@ -146,6 +146,17 @@ app.post('/api/updatecommunitycomment', (request, response) => {
   })
 })
 
+app.post('/api/deletecommunitycomment', (request, response) => {
+  const commentId = request.body.commentId;
+  console.log(commentId);
+
+  const sqlUpdate = "DELETE FROM CommunityComment WHERE CommentId = ?;";
+  db.query(sqlUpdate, [commentId], (err, result) => {
+    console.log(err);
+    response.send(err);
+  })
+})
+
 app.post('/api/likecomment', (request, response) => {
   const transaction = (commentId, userId) => {
     db.beginTransaction((err) => {
@@ -172,14 +183,9 @@ app.post('/api/likecomment', (request, response) => {
               });
             }
 
-            db.commit(function(err) {
-              if (err) {
-                return db.rollback(() => {
-                  throw err;
-                });
-              }
-              console.log('success!');
-            });            
+            db.query('COMMIT', (err) => {
+              if (err) throw err;
+            })
           });
         });
       });
@@ -431,7 +437,7 @@ app.get('/api/othercommunities', (request, response) => {
 app.post('/api/joincommunity', (request, response) => {
   const communityId = request.body.communityId;
   const userId = request.body.userId;
-  const sql = "INSERT INTO CommunityMember VALUES (?, ?, 0);";
+  const sql = "INSERT INTO CommunityMember VALUES (?, ?, 0, 0);";
   db.query(sql, [userId, communityId], (err, result) => {
     console.log(err);
     response.send(result);
@@ -443,6 +449,15 @@ app.post('/api/leavecommunity', (request, response) => {
   const userId = request.body.userId;
   const sql = "DELETE FROM CommunityMember WHERE UserId = ? AND CommunityId = ?;";
   db.query(sql, [userId, communityId], (err, result) => {
+    console.log(err);
+    response.send(result);
+  })
+});
+
+app.get('/api/topcontributors', (request, response) => {
+  const communityId = request.body.communityId;
+  const sql = "(SELECT u.FirstName, u.LastName, u.UserId, cm.Ranking FROM (CommunityMember cm JOIN User u ON cm.UserId = u.UserId) WHERE cm.CommunityId = ? AND cm.Ranking = 1) UNION (SELECT u.FirstName, u.LastName, u.UserId, cm.Ranking FROM (CommunityMember cm JOIN User u ON cm.UserId = u.UserId) WHERE cm.CommunityId = ? AND cm.Ranking = 2) UNION (SELECT u.FirstName, u.LastName, u.UserId, cm.Ranking FROM (CommunityMember cm JOIN User u ON cm.UserId = u.UserId) WHERE cm.CommunityId = ? AND cm.Ranking = 3);";
+  db.query(sql, [communityId, communityId, communityId], (err, result) => {
     console.log(err);
     response.send(result);
   })
