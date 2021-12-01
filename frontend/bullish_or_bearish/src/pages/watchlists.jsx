@@ -36,7 +36,7 @@ export default class WatchList extends Component {
 
   favorites() {
     const userId = localStorage.getItem('userId')
-    axios.post('http://localhost:3002/api/getFavoriteLists', {params:{UserId: userId}}).then(
+    axios.get('http://localhost:3002/api/getFavoriteLists', {params:{UserId: userId}}).then(
       response => {
         console.log(response)
         if (response.data.length > 0) {
@@ -48,7 +48,7 @@ export default class WatchList extends Component {
 
   others() {
     const userId = localStorage.getItem('userId')
-    axios.post('http://localhost:3002/api/watchlist', {params:{UserId: userId}}).then(
+    axios.get('http://localhost:3002/api/watchlist', {params:{UserId: userId}}).then(
         response => {
             console.log(response)
             if (response.data.length > 0) {
