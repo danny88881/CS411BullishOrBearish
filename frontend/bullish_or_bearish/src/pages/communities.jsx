@@ -83,8 +83,8 @@ export default class Communities extends Component {
          this.state.users.map((community) =>
            <div>
              <div style={{cursor:"pointer"}} onClick={() => {document.location.href = "/Communities/" + community['CommunityId']}}>
-               <h1>Name: {community['Name']}</h1>
-               <p>Description: {community['Description'].toLowerCase()}</p>
+               <h1>{community['Name']}</h1>
+               <p>{community['Description'].toLowerCase()}</p>
              </div>
              <button style={{fontSize:"16px"}} type="button" onClick={() =>{this.leave(community['CommunityId'])}}>leave</button>    
            </div>       
@@ -95,8 +95,8 @@ export default class Communities extends Component {
          this.state.others.map((community) =>
            <div>
              <div style={{cursor:"pointer"}} onClick={() => {document.location.href = "/Communities/" + community['CommunityId']}}>
-               <h1>Name: {community['Name']}</h1>
-               <p>Description: {community['Description'].toLowerCase()}</p>
+               <h1>{community['Name']}</h1>
+               <p>{community['Description'].toLowerCase()}</p>
              </div>
              <button style={{fontSize:"16px"}} type="button" onClick={() =>{this.join(community['CommunityId'])}}>join</button>    
            </div>       
